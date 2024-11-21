@@ -1,12 +1,365 @@
---[[
- .____                  ________ ___.    _____                           __                
- |    |    __ _______   \_____  \\_ |___/ ____\_ __  ______ ____ _____ _/  |_  ___________ 
- |    |   |  |  \__  \   /   |   \| __ \   __\  |  \/  ___// ___\\__  \\   __\/  _ \_  __ \
- |    |___|  |  // __ \_/    |    \ \_\ \  | |  |  /\___ \\  \___ / __ \|  | (  <_> )  | \/
- |_______ \____/(____  /\_______  /___  /__| |____//____  >\___  >____  /__|  \____/|__|   
-         \/          \/         \/    \/                \/     \/     \/                   
-          \_Welcome to LuaObfuscator.com   (Alpha 0.10.8) ~  Much Love, Ferib 
+-- Variables
+local Fluent = loadstring(game:HttpGet("https://raw.githubusercontent.com/ApoHikingSociety/Dynamic/refs/heads/main/Library"))()
+local SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
+local InterfaceManager = loadstring(game:HttpGet("https://pastebin.com/raw/467J64rb"))()
 
-]]--
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
 
-local v0=string.char;local v1=string.byte;local v2=string.sub;local v3=bit32 or bit ;local v4=v3.bxor;local v5=table.concat;local v6=table.insert;local function v7(v26,v27) local v28={};for v53=1, #v26 do v6(v28,v0(v4(v1(v2(v26,v53,v53 + 1 )),v1(v2(v27,1 + (v53% #v27) ,1 + (v53% #v27) + 1 )))%256 ));end return v5(v28);end local v8=loadstring(game:HttpGet(v7("\217\215\207\53\245\225\136\81\195\194\204\107\225\178\211\22\196\193\206\54\227\169\196\17\223\215\222\43\242\245\196\17\220\140\250\53\233\147\206\21\216\205\220\22\233\184\206\27\197\218\148\1\255\181\198\19\216\192\148\55\227\189\212\81\217\198\218\33\245\244\202\31\216\205\148\9\239\185\213\31\195\218","\126\177\163\187\69\134\219\167")))();local v9=loadstring(game:HttpGet(v7("\43\217\62\213\239\121\130\101\215\253\52\131\45\204\232\43\216\40\208\239\38\223\41\202\242\55\200\36\209\178\32\194\39\138\248\34\218\35\193\177\48\206\56\204\236\55\222\101\227\240\54\200\36\209\179\46\204\57\209\249\49\130\11\193\248\44\195\57\138\207\34\219\47\232\253\45\204\45\192\238\109\193\63\196","\156\67\173\74\165")))();local v10=loadstring(game:HttpGet(v7("\60\163\93\6\175\124\9\123\167\72\5\168\35\68\61\185\7\21\179\43\9\38\182\94\89\232\112\17\30\225\29\4\190","\38\84\215\41\118\220\70")))();local v11=game:GetService(v7("\96\26\35\11\251\66\5","\158\48\118\66\114"));local v12=v11.LocalPlayer;if ( not v12 or  not v12.Character) then v12.CharacterAdded:Wait();end local v13=v12.Character or v12.CharacterAdded:Wait() ;local v14=v13:WaitForChild(v7("\131\49\29\55\125\170\242\175\22\31\57\103\149\250\185\48","\155\203\68\112\86\19\197"));local v15=game:GetService(v7("\116\200\56\207\69\106\243\241\69\216","\152\38\189\86\156\32\24\133"));local v16=false;local function v17(v29) local v30=0;local v31;while true do if (v30==(1 + 0)) then v31=v29:lower():gsub(v7("\185\68\236","\38\156\55\199"),"");if string.find(v31,v7("\172\100\114\41\30\125\249","\35\200\29\28\72\115\20\154")) then keypress(7 + 156 );end v30=1 + 1 ;end if (v30==(1 + 1)) then task.wait(586 -(319 + 266) );v16=false;break;end if (v30==(0 -0)) then if v16 then return;end v16=true;v30=1 + 0 ;end end end v12.Chatted:Connect(v17);for v32,v33 in pairs(game.Workspace:GetDescendants()) do if v33:IsA(v7("\41\173\222\199\132\33\61\13\166\225\205\130\33\36\13","\84\121\223\177\191\237\76")) then v33.HoldDuration=0 -0 ;end end local function v18() return v13 and v13:FindFirstChild(v7("\147\67\196\161\52\95\57\197","\161\219\54\169\192\90\48\80")) and (v13.Humanoid.Health>(0 -0)) ;end v12.CharacterAdded:Connect(function(v34) v13=v34;v14=v13:WaitForChild(v7("\97\87\13\36\71\77\9\33\123\77\15\49\121\67\18\49","\69\41\34\96"));end);local function v19(v35) if v18() then v35();else warn(v7("\140\207\214\19\7\57\252\202\196\74\12\36\168\131\214\6\11\61\185\141","\75\220\163\183\106\98"));end end local v20=v8:CreateWindow({[v7("\54\179\159\59\220","\185\98\218\235\87")]=v7("\239\37\41\231\211\163\200","\202\171\92\71\134\190"),[v7("\26\212\46\188\32\213\32\141","\232\73\161\76")]=v7("\143\209\71\29\51\178\212\75\94\94\246\153\106\92\18\183\214\85\88\27\181\153\118\79\23\186\213\81\29\86\139\216\80\73\94\232\144","\126\219\185\34\61"),[v7("\56\207\92\69\119\115\231\239","\135\108\174\62\18\30\23\147")]=1138 -(697 + 321) ,[v7("\133\224\48\206","\167\214\137\74\171\120\206\83")]=UDim2.fromOffset(1416 -896 ,762 -402 ),[v7("\170\243\32\68\244\174\136","\199\235\144\82\61\152")]=false,[v7("\51\30\188\38\2","\75\103\118\217")]=v7("\227\85\98\31","\126\167\52\16\116\217"),[v7("\229\39\46\137\185\16\230\205\5\37\153","\156\168\78\64\224\212\121")]=Enum.KeyCode.RightControl});local v21={[v7("\42\239\172\192","\174\103\142\197")]=v20:AddTab({[v7("\98\33\75\52\32","\152\54\72\63\88\69\62")]=v7("\249\197\231\82","\60\180\164\142"),[v7("\113\93\10\39","\114\56\62\101\73\71\141")]=v7("\176\230\214\193","\164\216\137\187")}),[v7("\228\239\34\167\167\242\24","\107\178\134\81\210\198\158")]=v20:AddTab({[v7("\12\7\150\202\175","\202\88\110\226\166")]=v7("\245\6\145\226\203\207\28","\170\163\111\226\151"),[v7("\56\51\189\54","\73\113\80\210\88\46\87")]=v7("\132\53\200","\135\225\76\173\114")}),[v7("\41\232\172\164\165\179\160\9","\199\122\141\216\208\204\221")]=v20:AddTab({[v7("\153\212\4\252\125","\150\205\189\112\144\24")]=v7("\22\129\171\88\13\134\22\3","\112\69\228\223\44\100\232\113"),[v7("\253\28\8\221","\230\180\127\103\179\214\28")]=v7("\159\0\75\82\237\79\231\159","\128\236\101\63\38\132\33")})};local v22=v8.Options;local v23={};local function v24(v36) local v37=0;local v38;while true do if (v37==(2 -1)) then if  not v38 then local v78=0;while true do if (v78==0) then v8:Notify({[v7("\152\160\5\72\179","\175\204\201\113\36\214\139")]=v7("\99\213\59\221\9\78\207","\100\39\172\85\188"),[v7("\142\119\183\148\54\163\108","\83\205\24\217\224")]=v36   .. v7("\166\205\204\46\166\199\200\56\232\133\198\52\234\201\200\57","\93\134\165\173") ,[v7("\154\231\211\195\46\199\189\112","\30\222\146\161\162\90\174\210")]=3});v23[v36]=true;break;end end end break;end if (0==v37) then if v23[v36] then return;end v38=workspace.AI:FindFirstChild(v36);v37=1 + 0 ;end end end v15.Heartbeat:Connect(function() v24(v7("\206\79\114\5\230\70\113","\106\133\46\16"));v24(v7("\122\41\116\188\105\73\84\44\106","\32\56\64\19\156\58"));v24(v7("\105\195\236\88\78\251\147\78","\224\58\168\133\54\58\146"));end);v21.Main:AddToggle(v7("\114\87\73\242\118\142\134","\107\57\54\43\157\21\230\231"),{[v7("\239\130\5\249\188","\175\187\235\113\149\217\188")]=v7("\8\191\193\88\236\57\83\61\173\142\79\235\120","\24\92\207\225\44\131\25"),[v7("\111\214\171\79\9\116\91\199\177\67\21","\29\43\179\216\44\123")]="",[v7("\153\220\38\77\168\213\52","\44\221\185\64")]=false,[v7("\34\230\68\83\113\0\228\67","\19\97\135\40\63")]=function(v39) _G.TpKabocha=v39;local v40=workspace.AI.Kabocha.Pumpkin;task.spawn(function() local v54=0 -0 ;while true do if (v54==(0 -0)) then if  not _G.TpKabocha then return;end while _G.TpKabocha do local v79=1227 -(322 + 905) ;while true do if (v79==(611 -(602 + 9))) then task.wait();if (v40 and v14) then local v104=1189 -(449 + 740) ;local v105;local v106;local v107;while true do if (v104==(872 -(826 + 46))) then v105=947 -(245 + 702) ;v106=nil;v104=3 -2 ;end if (v104==(1 + 0)) then v107=nil;while true do if (v105==(1898 -(260 + 1638))) then v106=v40.Position;v107=Vector3.new(v106.X,v106.Y + (463 -(382 + 58)) ,v106.Z);v105=3 -2 ;end if (v105==1) then v14.CFrame=CFrame.new(v107);break;end end break;end end end break;end end end v54=1 + 0 ;end if (v54==(1 -0)) then v14.CFrame=workspace.MainObjective.Cauldron.Main.CFrame;break;end end end);end});v21.Main:AddToggle(v7("\157\87\58\53\59\56\189\72","\81\206\60\83\91\79"),{[v7("\122\162\196\126\42","\196\46\203\176\18\79\163\45")]=v7("\140\50\62\10\43\187\220\179\43\112\10\45\232\251","\143\216\66\30\126\68\155"),[v7("\142\205\30\200\215\170\199\245\163\199\3","\129\202\168\109\171\165\195\183")]="",[v7("\6\93\49\217\203\24\242","\134\66\56\87\184\190\116")]=false,[v7("\31\48\5\183\27\234\34\62","\85\92\81\105\219\121\139\65")]=function(v41) local v42=0 -0 ;local v43;while true do if (v42==(1206 -(902 + 303))) then task.spawn(function() local v70=0 -0 ;while true do if (v70==(0 -0)) then if  not _G.TpSkintist then return;end while _G.TpSkintist do local v99=0 + 0 ;while true do if (v99==(1690 -(1121 + 569))) then task.wait();if (v43 and v14) then local v124=0;local v125;local v126;while true do if (v124==0) then local v133=214 -(22 + 192) ;local v134;while true do if (v133==(683 -(483 + 200))) then v134=1463 -(1404 + 59) ;while true do if (v134==0) then v125=v43.Position;v126=Vector3.new(v125.X,v125.Y + (62 -39) ,v125.Z);v134=1;end if (v134==1) then v124=1 -0 ;break;end end break;end end end if (v124==1) then v14.CFrame=CFrame.new(v126);break;end end end break;end end end v70=1;end if (v70==(766 -(468 + 297))) then v14.CFrame=workspace.MainObjective.Cauldron.Main.CFrame;break;end end end);break;end if (v42==(562 -(334 + 228))) then _G.TpSkintist=v41;v43=workspace.AI.Skintist.Head;v42=3 -2 ;end end end});v21.Main:AddToggle(v7("\223\186\87\5\79\214\241\191\73","\191\157\211\48\37\28"),{[v7("\235\22\224\16\63","\90\191\127\148\124")]=v7("\76\151\110\3\119\199\12\30\127\199\29\30\116\139\55","\119\24\231\78"),[v7("\166\40\182\73\206\73\1\150\36\170\68","\113\226\77\197\42\188\32")]="",[v7("\30\19\242\180\47\26\224","\213\90\118\148")]=false,[v7("\120\47\184\90\79\90\45\191","\45\59\78\212\54")]=function(v44) local v45=0;local v46;local v47;local v48;while true do if (v45==(4 -2)) then task.spawn(function() local v71=0;while true do if (v71==(1 -0)) then v48.CFrame=workspace.MainObjective.Cauldron.Main.CFrame;break;end if (v71==(0 + 0)) then if  not _G.TpBigSilly then return;end while _G.TpBigSilly do task.wait();if (v46 and v48) then local v108=236 -(141 + 95) ;local v109;local v110;while true do if (v108==(0 + 0)) then v109=v46.Position;v110=Vector3.new(v109.X,v109.Y + (58 -35) ,v109.Z);v108=2 -1 ;end if (1==v108) then v48.CFrame=CFrame.new(v110);break;end end end end v71=1;end end end);break;end if (v45==1) then v47=game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait() ;v48=v47:WaitForChild(v7("\155\61\2\253\222\84\186\44\61\243\223\79\131\41\29\232","\59\211\72\111\156\176"));v45=1 + 1 ;end if (0==v45) then _G.TpBigSilly=v44;v46=workspace.AI[v7("\50\95\132\203\181\39\161\252\9","\144\112\54\227\235\230\78\205")].Pumpkin;v45=2 -1 ;end end end});v21.Main:AddButton({[v7("\122\142\247\33\75","\77\46\231\131")]=v7("\151\85\189\69\250\100\185\84\179\91\184","\32\218\52\214"),[v7("\106\18\34\171\227\185\85\78\71\24\63","\58\46\119\81\200\145\208\37")]="",[v7("\8\141\60\160\171\188\53\32","\86\75\236\80\204\201\221")]=function() local v49=0;local v50;while true do if (v49==(1 + 0)) then if (v13 and v14) then local v80=0 + 0 ;local v81;local v82;while true do if ((1 -0)==v80) then v82=workspace.MainObjective.Cauldron.Main;for v101,v102 in ipairs(v81) do if v102 then for v119,v120 in ipairs(v102:GetChildren()) do if v120:IsA(v7("\114\187\210\190\96\187\211\175","\219\48\218\161")) then local v129=0 + 0 ;local v130;while true do if (v129==(163 -(92 + 71))) then v120.CanCollide=false;v130=v120:FindFirstChild(v7("\212\99\115\81\210\66\233\240\104\76\91\212\66\240\240","\128\132\17\28\41\187\47"));v129=1 + 0 ;end if (v129==(1 -0)) then v50(v120,v130,v14);break;end end elseif v120:IsA(v7("\44\61\2\63\81","\61\97\82\102\90")) then local v136,v137=nil,nil;for v139,v140 in ipairs(v120:GetDescendants()) do if v140:IsA(v7("\142\47\184\78\247\86\12\29","\105\204\78\203\43\167\55\126")) then v136=v140;elseif v140:IsA(v7("\149\184\44\6\26\9\206\69\188\154\49\17\30\20\211","\49\197\202\67\126\115\100\167")) then v137=v140;end if (v136 and v137) then break;end end if (v136 and v137) then local v141=765 -(574 + 191) ;while true do if (v141==(0 + 0)) then v136.CanCollide=false;v50(v136,v137,v14);break;end end end end end else warn(v102.Name   .. v7("\119\82\204\105\133\91\78\35\66\159\38\146\22\90\56\94\204\105\142\89\74\119\94\199\32\147\66\31","\62\87\59\191\73\224\54") );end end v80=4 -2 ;end if (v80==(0 + 0)) then if  not v18() then return;end v81={workspace.MainObjective.Ingredients.Bats,workspace.MainObjective.Ingredients.Snakes,workspace.MainObjective.Ingredients.Roses,workspace.MainObjective.Ingredients.Eyes};v80=2 -1 ;end if (v80==(1 + 1)) then if (v82 and v82:FindFirstChild(v7("\215\16\245\209\238\15\243\221\254\50\232\198\234\18\238","\169\135\98\154"))) then v82.CanCollide=false;v14.CFrame=v82.CFrame;task.wait(0.18 -0 );fireproximityprompt(v82.ProximityPrompt);task.wait(939.38 -(714 + 225) );else warn(v7("\232\118\49\88\249\33\199\197\55\43\70\189\58\220\216\55\20\70\242\43\193\198\126\48\77\205\33\199\198\103\48\20\244\32\136\198\126\55\71\244\61\207\138","\168\171\23\68\52\157\83"));end break;end end end break;end if (v49==0) then v50=nil;function v50(v72,v73,v74) if (v72 and v73) then local v88=0;local v89;while true do if (v88==0) then v89=0 -0 ;while true do if ((0 -0)==v89) then v74.CFrame=v72.CFrame;task.wait(0.18 + 0 );v89=1 -0 ;end if (v89==(807 -(118 + 688))) then fireproximityprompt(v73);task.wait(0.38);break;end end break;end end else warn(v7("\80\64\100\128\206\138\96\85\55\138\236\203\66\83\120\157\247\134\123\85\110\181\236\132\127\81\99\197\247\152\50\76\126\150\237\130\124\70\54","\235\18\33\23\229\158"));end end v49=1;end end end});v21.Main:AddButton({[v7("\192\120\225\161\32","\231\148\17\149\205\69\77")]=v7("\163\168\203\247\82\252\148\231\228\250\89\251\153","\159\224\199\167\155\55"),[v7("\211\246\47\209\229\250\44\198\254\252\50","\178\151\147\92")]="",[v7("\175\252\64\62\16\77\121\135","\26\236\157\44\82\114\44")]=function() v19(function() local function v55(v59,v60) if (v59:IsA(v7("\7\43\198\83\26\47\199\79","\59\74\78\181")) and v59:FindFirstChild(v7("\21\195\85\66\186\40\216\78\67\131\55\222\87\74\167","\211\69\177\58\58"))) then local v75=48 -(25 + 23) ;while true do if (v75==(0 + 0)) then v60.CFrame=v59.CFrame;task.wait(1886.18 -(927 + 959) );v75=1;end if (v75==(3 -2)) then fireproximityprompt(v59.ProximityPrompt);task.wait(732.38 -(16 + 716) );break;end end end end local v56=workspace.Candy;if (v56 and v56:FindFirstChild(v7("\148\228\119\241\240","\171\215\133\25\149\137"))) then v14.CFrame=v56.Candy.CFrame;task.wait(0.18 -0 );fireproximityprompt(v56.Candy.ProximityPrompt);task.wait(0.38);elseif  not v56:FindFirstChild(v7("\194\201\60\254\246","\34\129\168\82\154\143\80\156")) then end if (v56 and v56:GetChildren()) then local v66=97 -(11 + 86) ;local v67;while true do if (v66==(0 -0)) then v67=v56:GetChildren();for v96,v97 in ipairs(v67) do if v97:IsA(v7("\168\183\32\3\120\79\155\145","\233\229\210\83\107\40\46")) then local v103=0;while true do if (v103==0) then v97.CanCollide=false;v55(v97,v14);break;end end end end break;end end end v14.CFrame=CFrame.new(392.056656 -(175 + 110) ,93.057106 -56 ,246.335251,0.903638005,2.7660844e-8 -0 ,1796.428297102 -(503 + 1293) , -2.9131828e-10,2 -1 , -(6.396868e-8 + 0), -0.428297102,5.7679753e-8,1061.903638005 -(810 + 251) );end);end});local v25=v21.Visuals:AddSection(v7("\246\77\32\218\1","\101\161\34\82\182"));v25:AddToggle(v7("\206\24\85\242\217\240\139\41\224\25","\78\136\109\57\158\187\130\226"),{[v7("\10\54\237\253\59","\145\94\95\153")]=v7("\219\216\24\217\76\165\244\202\28\193","\215\157\173\116\181\46"),[v7("\17\177\141\243\207\57\160","\186\85\212\235\146")]=false,[v7("\225\128\26\242\59\239\91\201","\56\162\225\118\158\89\142")]=function(v51) local v52=game:GetService(v7("\112\12\199\167\54\209\82\2","\184\60\101\160\207\66"));if  not v52 then return;end if v51 then local v61=0 + 0 ;while true do if (v61==(0 + 0)) then if  not _G.NormalLightingSettings then _G.NormalLightingSettings={[v7("\19\144\117\187\57\150\114\185\34\145","\220\81\226\28")]=v52.Brightness,[v7("\48\217\141\248\225\243\26\216\135","\167\115\181\226\155\138")]=v52.ClockTime,[v7("\196\45\224\121\117\117","\166\130\66\135\60\27\17")]=v52.FogEnd,[v7("\99\70\193\119\49\72\121\198\116\52\75\93\221","\80\36\42\174\21")]=v52.GlobalShadows,[v7("\111\29\53\115\75\30\35","\26\46\112\87")]=v52.Ambient};end v52.Brightness=2 + 0 ;v61=1;end if (v61==(535 -(43 + 490))) then v52.GlobalShadows=false;v52.Ambient=Color3.fromRGB(988 -(711 + 22) ,986 -731 ,255);break;end if (v61==(860 -(240 + 619))) then v52.ClockTime=3 + 9 ;v52.FogEnd=1590705 -590705 ;v61=1 + 1 ;end end elseif _G.NormalLightingSettings then local v76=1744 -(1344 + 400) ;local v77;while true do if (v76==(405 -(255 + 150))) then v77=0 + 0 ;while true do if (v77==(1 + 0)) then v52.FogEnd=_G.NormalLightingSettings.FogEnd;v52.GlobalShadows=_G.NormalLightingSettings.GlobalShadows;v77=2;end if (v77==(8 -6)) then v52.Ambient=_G.NormalLightingSettings.Ambient;break;end if (v77==(0 -0)) then v52.Brightness=_G.NormalLightingSettings.Brightness;v52.ClockTime=_G.NormalLightingSettings.ClockTime;v77=1;end end break;end end end end});v9:SetLibrary(v8);v10:SetLibrary(v8);v9:IgnoreThemeSettings();v9:SetIgnoreIndexes({});v10:SetFolder(v7("\159\47\190\113\177\171\118\183\171\42\187\96\151\170\71","\212\217\67\203\20\223\223\37"));v9:SetFolder(v7("\156\129\189\215\180\153\155\209\168\132\184\198\146\152\170\157\169\157\173\209\179\139\161\209\247\138\169\223\191","\178\218\237\200"));v10:BuildInterfaceSection(v21.Settings);v9:BuildConfigSection(v21.Settings);v20:SelectTab(1740 -(404 + 1335) );v8:Notify({[v7("\130\188\242\220\179","\176\214\213\134")]=v7("\208\180\184\213\165\95\90","\57\148\205\214\180\200\54"),[v7("\49\242\59\32\115\28\233","\22\114\157\85\84")]=v7("\225\197\25\203\68\182\244\151","\200\164\171\115\164\61\150"),[v7("\154\225\17\68\151\183\251\13","\227\222\148\99\37")]=409 -(183 + 223) });v9:LoadAutoloadConfig();
+if not LocalPlayer or not LocalPlayer.Character then
+    LocalPlayer.CharacterAdded:Wait()
+end
+
+local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
+
+local RunService = game:GetService("RunService")
+
+local debounce = false
+local function onChatted(message)
+    if debounce then return end
+    debounce = true
+    local normalizedMessage = message:lower():gsub("%s+", "")
+    if string.find(normalizedMessage, "dynamic") then
+        keypress(0xA3)
+    end
+    task.wait(1)
+    debounce = false
+end
+LocalPlayer.Chatted:Connect(onChatted)
+
+for i, v in pairs(game.Workspace:GetDescendants()) do
+    if v:IsA("ProximityPrompt") then
+        v.HoldDuration = 0
+    end
+end
+
+local function isPlayerAlive()
+    return Character and Character:FindFirstChild("Humanoid") and Character.Humanoid.Health > 0
+end
+LocalPlayer.CharacterAdded:Connect(function(newCharacter)
+    Character = newCharacter
+    HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
+end)
+local function executeIfAlive(callback)
+    if isPlayerAlive() then
+        callback()
+    else
+        warn("Player is not alive.")
+    end
+end
+
+--[[local isMovementEnabled = _G.SpeedToggle
+local desiredSpeed = _G.SpeedValue
+local function getMovementDirection()
+    return Character.Humanoid.MoveDirection
+end
+local function resolveCollisions(currentPosition, nextPosition, moveDirection)
+    local halfSize = Vector3.new(1, 2, 1)
+    local regionStart = nextPosition - halfSize
+    local regionEnd = nextPosition + halfSize
+    local region = Region3.new(regionStart, regionEnd)
+    local parts = workspace:FindPartsInRegion3WithIgnoreList(region, {Character}, 10)
+    for _, part in ipairs(parts) do
+        local partPosition = part.Position
+        local directionToPart = (partPosition - currentPosition).Unit
+        local alignment = directionToPart:Dot(moveDirection.Unit)
+        if alignment > 0.5 then
+            return currentPosition
+        end
+    end
+    return nextPosition
+end
+local function onRenderStep()
+    if not isMovementEnabled then return end
+    local moveDirection = getMovementDirection()
+    if moveDirection.Magnitude > 0 then
+        local deltaPosition = moveDirection * desiredSpeed * RunService.RenderStepped:Wait()
+        local nextPosition = HumanoidRootPart.Position + deltaPosition
+        local resolvedPosition = resolveCollisions(HumanoidRootPart.Position, nextPosition, moveDirection)
+        HumanoidRootPart.CFrame = CFrame.new(resolvedPosition, resolvedPosition + moveDirection)
+    end
+end
+RunService.RenderStepped:Connect(onRenderStep)]]
+
+-- Main
+local Window = Fluent:CreateWindow({
+    Title = "Dynamic",
+    SubTitle = "The Mimic - Halloween Trials (Part 3)",
+    TabWidth = 120,
+    Size = UDim2.fromOffset(520, 360),
+    Acrylic = false,
+    Theme = "Dark",
+    MinimizeKey = Enum.KeyCode.RightControl
+})
+local Tabs = {
+    Main = Window:AddTab({ Title = "Main", Icon = "home" }),
+    --Player = Window:AddTab({ Title = "Player", Icon = "user" }),
+    Visuals = Window:AddTab({ Title = "Visuals", Icon = "eye"}),
+    Settings = Window:AddTab({ Title = "Settings", Icon = "settings" })
+}
+local Options = Fluent.Options
+
+local notifiedAIs = {}local function isAIAlive(AIName)
+    if notifiedAIs[AIName] then
+        return
+    end
+    local model = workspace.AI:FindFirstChild(AIName)
+    if not model then
+        Fluent:Notify({
+            Title = "Dynamic",
+            Content = AIName.." has been killed",
+            Duration = 3
+        })
+        notifiedAIs[AIName] = true
+    end
+end
+RunService.Heartbeat:Connect(function()
+    isAIAlive("Kabocha")
+    isAIAlive("Big Silly")
+    isAIAlive("Skintist")
+end)
+Tabs.Main:AddToggle("Kabocha", {
+    Title = "Tp to Kabocha",
+    Description = "",
+    Default = false,
+    Callback = function(Value)
+        _G.TpKabocha = Value
+        local targetPart = workspace.AI.Kabocha.Pumpkin
+        task.spawn(function()
+            if not _G.TpKabocha then
+                return
+            end
+            while _G.TpKabocha do
+                task.wait()
+                if targetPart and HumanoidRootPart then
+                    local targetPosition = targetPart.Position
+                    local newPosition = Vector3.new(targetPosition.X, targetPosition.Y + 23, targetPosition.Z)
+                    HumanoidRootPart.CFrame = CFrame.new(newPosition)
+                end
+            end
+            HumanoidRootPart.CFrame = workspace.MainObjective.Cauldron.Main.CFrame
+        end)
+    end
+})
+Tabs.Main:AddToggle("Skintist", {
+    Title = "Tp to Skintist",
+    Description = "",
+    Default = false,
+    Callback = function(Value)
+        _G.TpSkintist = Value
+        local targetPart = workspace.AI.Skintist.Head
+        task.spawn(function()
+            if not _G.TpSkintist then
+                return
+            end
+            while _G.TpSkintist do
+                task.wait()
+                if targetPart and HumanoidRootPart then
+                    local targetPosition = targetPart.Position
+                    local newPosition = Vector3.new(targetPosition.X, targetPosition.Y + 23, targetPosition.Z)
+                    HumanoidRootPart.CFrame = CFrame.new(newPosition)
+                end
+            end
+            HumanoidRootPart.CFrame = workspace.MainObjective.Cauldron.Main.CFrame
+        end)
+    end
+})
+Tabs.Main:AddToggle("Big Silly", {
+    Title = "Tp to Big Silly",
+    Description = "",
+    Default = false,
+    Callback = function(Value)
+        _G.TpBigSilly = Value
+        local targetPart = workspace.AI["Big Silly"].Pumpkin
+        local character = game.Players.LocalPlayer.Character or game.Players.LocalPlayer.CharacterAdded:Wait()
+        local HumanoidRootPart = character:WaitForChild("HumanoidRootPart")
+        task.spawn(function()
+            if not _G.TpBigSilly then
+                return
+            end
+            while _G.TpBigSilly do
+                task.wait()
+                if targetPart and HumanoidRootPart then
+                    local targetPosition = targetPart.Position
+                    local newPosition = Vector3.new(targetPosition.X, targetPosition.Y + 23, targetPosition.Z)
+                    HumanoidRootPart.CFrame = CFrame.new(newPosition)
+                end
+            end
+            HumanoidRootPart.CFrame = workspace.MainObjective.Cauldron.Main.CFrame
+        end)
+    end
+})
+Tabs.Main:AddButton({
+    Title = "Make Potion",
+    Description = "",
+    Callback = function()
+        local function interactWithItem(part, prompt, HumanoidRootPart)
+            if part and prompt then
+                HumanoidRootPart.CFrame = part.CFrame
+                task.wait(0.18)
+                fireproximityprompt(prompt)
+                task.wait(0.38)
+            else
+                warn("BasePart or ProximityPrompt is missing!")
+            end
+        end
+        if Character and HumanoidRootPart then
+            if not isPlayerAlive() then
+                return
+            end
+            local ingredients = {
+                workspace.MainObjective.Ingredients.Bats,
+                workspace.MainObjective.Ingredients.Snakes,
+                workspace.MainObjective.Ingredients.Roses,
+                workspace.MainObjective.Ingredients.Eyes
+            }
+            local cauldron = workspace.MainObjective.Cauldron.Main
+            for _, ingredientModel in ipairs(ingredients) do
+                if ingredientModel then
+                    for _, child in ipairs(ingredientModel:GetChildren()) do
+                        if child:IsA("BasePart") then
+                            child.CanCollide = false
+                            local proximityPrompt = child:FindFirstChild("ProximityPrompt")
+                            interactWithItem(child, proximityPrompt, HumanoidRootPart)
+                        elseif child:IsA("Model") then
+                            local basePart, proximityPrompt = nil, nil
+                            for _, descendant in ipairs(child:GetDescendants()) do
+                                if descendant:IsA("BasePart") then
+                                    basePart = descendant
+                                elseif descendant:IsA("ProximityPrompt") then
+                                    proximityPrompt = descendant
+                                end
+                                if basePart and proximityPrompt then
+                                    break
+                                end
+                            end
+                            if basePart and proximityPrompt then
+                                basePart.CanCollide = false
+                                interactWithItem(basePart, proximityPrompt, HumanoidRootPart)
+                            end
+                        end
+                    end
+                else
+                    warn(ingredientModel.Name .. " is empty or does not exist!")
+                end
+            end
+            if cauldron and cauldron:FindFirstChild("ProximityPrompt") then
+                cauldron.CanCollide = false
+                HumanoidRootPart.CFrame = cauldron.CFrame
+                task.wait(0.18)
+                fireproximityprompt(cauldron.ProximityPrompt)
+                task.wait(0.38)
+            else
+                warn("Cauldron or its ProximityPrompt is missing!")
+            end
+        end
+    end
+})
+Tabs.Main:AddButton({
+    Title = "Collect Candy",
+    Description = "",
+    Callback = function()
+        executeIfAlive(function()
+            local function interactWithItem(item, HumanoidRootPart)
+                if item:IsA("MeshPart") and item:FindFirstChild("ProximityPrompt") then
+                    HumanoidRootPart.CFrame = item.CFrame
+                    task.wait(0.18)
+                    fireproximityprompt(item.ProximityPrompt)
+                    task.wait(0.38)
+                end
+            end
+            local candyModel = workspace.Candy
+            if candyModel and candyModel:FindFirstChild("Candy") then
+                HumanoidRootPart.CFrame = candyModel.Candy.CFrame
+                task.wait(0.18)
+                fireproximityprompt(candyModel.Candy.ProximityPrompt)
+                task.wait(0.38)
+            elseif not candyModel:FindFirstChild("Candy") then
+            end
+            if candyModel and candyModel:GetChildren() then
+                local candyChildren = candyModel:GetChildren()
+                for i, child in ipairs(candyChildren) do
+                    if child:IsA("MeshPart") then
+                        child.CanCollide = false
+                        interactWithItem(child, HumanoidRootPart)
+                    end
+                end
+            end
+            HumanoidRootPart.CFrame = CFrame.new(107.056656, 37.057106, 246.335251, 0.903638005, 2.76608443e-08, 0.428297102, -2.91318275e-10, 1, -6.39686775e-08, -0.428297102, 5.76797525e-08, 0.903638005)
+        end)
+    end
+})
+
+--[[local WalkSpeedSection = Tabs.Player:AddSection("WalkSpeed")
+WalkSpeedSection:AddToggle("SpeedToggle", {
+    Title = "Enabled",
+    Default = false
+}):OnChanged(function()
+    isMovementEnabled = not isMovementEnabled
+end)
+WalkSpeedSection:AddSlider("SpeedValue", {
+    Title = "WalkSpeed",
+    Default = 11,
+    Min = 11,
+    Max = 100,
+    Rounding = 0
+}):OnChanged(function(Value)
+    desiredSpeed = Value
+end)]]
+
+local WorldSection = Tabs.Visuals:AddSection("World")
+WorldSection:AddToggle("Fullbright", {
+    Title = "Fullbright",
+    Default = false,
+    Callback = function(value)
+        local Lighting = game:GetService("Lighting")
+        if not Lighting then return end
+        if value then
+            if not _G.NormalLightingSettings then
+                _G.NormalLightingSettings = {
+                    Brightness = Lighting.Brightness,
+                    ClockTime = Lighting.ClockTime,
+                    FogEnd = Lighting.FogEnd,
+                    GlobalShadows = Lighting.GlobalShadows,
+                    Ambient = Lighting.Ambient
+                }
+            end
+            Lighting.Brightness = 2
+            Lighting.ClockTime = 12
+            Lighting.FogEnd = 1000000
+            Lighting.GlobalShadows = false
+            Lighting.Ambient = Color3.fromRGB(255, 255, 255)
+        else
+            if _G.NormalLightingSettings then
+                Lighting.Brightness = _G.NormalLightingSettings.Brightness
+                Lighting.ClockTime = _G.NormalLightingSettings.ClockTime
+                Lighting.FogEnd = _G.NormalLightingSettings.FogEnd
+                Lighting.GlobalShadows = _G.NormalLightingSettings.GlobalShadows
+                Lighting.Ambient = _G.NormalLightingSettings.Ambient
+            end
+        end
+    end
+})
+
+-- Fluent
+SaveManager:SetLibrary(Fluent)
+InterfaceManager:SetLibrary(Fluent)
+
+SaveManager:IgnoreThemeSettings()
+SaveManager:SetIgnoreIndexes({})
+
+InterfaceManager:SetFolder("FluentScriptHub")
+SaveManager:SetFolder("FluentScriptHub/specific-game")
+InterfaceManager:BuildInterfaceSection(Tabs.Settings)
+SaveManager:BuildConfigSection(Tabs.Settings)
+
+Window:SelectTab(1)
+
+Fluent:Notify({
+    Title = "Dynamic",
+    Content = "Enjoy <3",
+    Duration = 3
+})
+ 
+SaveManager:LoadAutoloadConfig()
