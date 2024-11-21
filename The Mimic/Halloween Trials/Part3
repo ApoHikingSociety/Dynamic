@@ -134,7 +134,7 @@ Tabs.Main:AddToggle("Kabocha", {
                 task.wait()
                 if targetPart and HumanoidRootPart then
                     local targetPosition = targetPart.Position
-                    local newPosition = Vector3.new(targetPosition.X, targetPosition.Y + 23, targetPosition.Z)
+                      local newPosition = Vector3.new(targetPosition.X, targetPosition.Y, targetPosition.Z + 25)
                     HumanoidRootPart.CFrame = CFrame.new(newPosition)
                 end
             end
@@ -157,7 +157,7 @@ Tabs.Main:AddToggle("Skintist", {
                 task.wait()
                 if targetPart and HumanoidRootPart then
                     local targetPosition = targetPart.Position
-                    local newPosition = Vector3.new(targetPosition.X, targetPosition.Y + 23, targetPosition.Z)
+                    local newPosition = Vector3.new(targetPosition.X, targetPosition.Y, targetPosition.Z + 25)
                     HumanoidRootPart.CFrame = CFrame.new(newPosition)
                 end
             end
@@ -182,7 +182,7 @@ Tabs.Main:AddToggle("Big Silly", {
                 task.wait()
                 if targetPart and HumanoidRootPart then
                     local targetPosition = targetPart.Position
-                    local newPosition = Vector3.new(targetPosition.X, targetPosition.Y + 23, targetPosition.Z)
+                    local newPosition = Vector3.new(targetPosition.X, targetPosition.Y, targetPosition.Z + 25)
                     HumanoidRootPart.CFrame = CFrame.new(newPosition)
                 end
             end
