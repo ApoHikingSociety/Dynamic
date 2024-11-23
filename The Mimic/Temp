@@ -2897,7 +2897,7 @@ function library:Init(key)
             local selectorLayout = Instance.new("UIListLayout")
             local selectorPadding = Instance.new("UIPadding")
             local selectorTwo = Instance.new("Frame")
-            local selectorText = Instance.new("TextButton")
+            local selectorText = Instance.new("TextLabel")
             local textBoxValuesPadding = Instance.new("UIPadding")
             local Frame = Instance.new("Frame")
             local selectorTwoLayout = Instance.new("UIListLayout")
@@ -2914,7 +2914,6 @@ function library:Init(key)
             selectorFrame.ClipsDescendants = true
             selectorFrame.Position = UDim2.new(0.00499999989, 0, 0.0895953774, 0)
             selectorFrame.Size = UDim2.new(0, 396, 0, 46)
-
             
             selectorLabel.Name = "selectorLabel"
             selectorLabel.Parent = selectorFrame
@@ -3040,15 +3039,6 @@ function library:Init(key)
                 Amount = #list
                 Val = (Amount * 20) + 20
             end
-            function Open()
-                selectorTwo.Visible = true
-            end
-            function Close()
-                selectorTwo.Visible = false
-            end
-            selectorText.MouseButton1Click:Connect(function()
-                Open()
-            end)
             for i,v in next, list do
                 local optionButton = Instance.new("TextButton")
 
@@ -3057,7 +3047,7 @@ function library:Init(key)
                 optionButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
                 optionButton.BackgroundTransparency = 1.000
                 optionButton.Size = UDim2.new(0, 394, 0, 20)
-                optionButton.AutoButtonColor = fals
+                optionButton.AutoButtonColor = false
                 optionButton.Font = Enum.Font.Code
                 optionButton.Text = v
                 optionButton.TextColor3 = Color3.fromRGB(160, 160, 160)
