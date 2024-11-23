@@ -3041,10 +3041,10 @@ function library:Init(key)
                 Val = (Amount * 20) + 20
             end
             function Open()
-                selectorContainer.Visible = true
+                selectorTwo.Visible = true
             end
             function Close()
-                selectorContainer.Visible = false
+                selectorTwo.Visible = false
             end
             selectorText.MouseButton1Click:Connect(function()
                 Open()
@@ -3057,7 +3057,7 @@ function library:Init(key)
                 optionButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
                 optionButton.BackgroundTransparency = 1.000
                 optionButton.Size = UDim2.new(0, 394, 0, 20)
-                optionButton.AutoButtonColor = false
+                optionButton.AutoButtonColor = fals
                 optionButton.Font = Enum.Font.Code
                 optionButton.Text = v
                 optionButton.TextColor3 = Color3.fromRGB(160, 160, 160)
