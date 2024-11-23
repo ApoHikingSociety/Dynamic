@@ -805,7 +805,7 @@ function library:Introduction()
     pageLayout.VerticalAlignment = Enum.VerticalAlignment.Center
 
     CreateTween("xsxRotation", 0)
-    local MinusAmount = -2
+    local MinusAmount = -8
     coroutine.wrap(function()
         while wait() do
             MinusAmount = MinusAmount + 0.4
