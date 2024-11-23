@@ -2897,7 +2897,7 @@ function library:Init(key)
             local selectorLayout = Instance.new("UIListLayout")
             local selectorPadding = Instance.new("UIPadding")
             local selectorTwo = Instance.new("Frame")
-            local selectorText = Instance.new("TextLabel")
+            local selectorText = Instance.new("TextButton")
             local textBoxValuesPadding = Instance.new("UIPadding")
             local Frame = Instance.new("Frame")
             local selectorTwoLayout = Instance.new("UIListLayout")
@@ -3051,7 +3051,7 @@ function library:Init(key)
             function Close()
                 selectorContainer.Visible = false
             end
-            selector.MouseButton1Click:Connect(function()
+            selectorText.MouseButton1Click:Connect(function()
                 Open()
             end)
             for i,v in next, list do
