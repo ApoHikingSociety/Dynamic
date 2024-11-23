@@ -3042,11 +3042,6 @@ function library:Init(key)
             end
             function Open()
                 selectorContainer.Visible = true
-                TweenService:Create(
-                    selectorContainer,
-                    TweenInfo.new(0.2, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
-                    { Size = UDim2.fromScale(1, 1) }
-                ):Play()
             end
             function Close()
                 selectorContainer.Visible = false
