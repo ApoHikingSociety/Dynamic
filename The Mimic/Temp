@@ -53,7 +53,7 @@ local drag = function(obj, latency)
     end
 
     obj.InputBegan:Connect(function(inp)
-        if (inp.UserInputType == Enum.UserInputType.MouseButton1) then
+        if (inp.UserInputType == Enum.UserInputType.MouseButton1 or inp.UserInputType == Enum.UserInputType.Touch) then
             toggled = true
             start = inp.Position
             startPos = obj.Position
@@ -66,7 +66,7 @@ local drag = function(obj, latency)
     end)
 
     obj.InputChanged:Connect(function(inp)
-        if (inp.UserInputType == Enum.UserInputType.MouseMovement) then
+        if (inp.UserInputType == Enum.UserInputType.MouseMovement or inp.UserInputType == Enum.UserInputType.Touch) then
             input = inp
         end
     end)
@@ -758,7 +758,7 @@ function library:Introduction()
     xsxLogo.Position = UDim2.new(0.5, 0, 0.5, 0)
     xsxLogo.Size = UDim2.new(0, 448, 0, 150)
     xsxLogo.Visible = true
-    xsxLogo.Image = "http://www.roblox.com/asset/?id=119898265947947"
+    xsxLogo.Image = "http://www.roblox.com/asset/?id=119895821936651"
     xsxLogo.ImageColor3 = Color3.fromRGB(159, 115, 255)
     xsxLogo.ImageTransparency = 1
     
@@ -770,7 +770,7 @@ function library:Introduction()
     hashLogo.Position = UDim2.new(0.5, 0, 0.5, 0)
     hashLogo.Size = UDim2.new(0, 150, 0, 150)
     hashLogo.Visible = true
-    hashLogo.Image = "http://www.roblox.com/asset/?id=79463494945549"
+    hashLogo.Image = "http://www.roblox.com/asset/?id=119895821936651"
     hashLogo.ImageColor3 = Color3.fromRGB(159, 115, 255)
     hashLogo.ImageTransparency = 1
     
