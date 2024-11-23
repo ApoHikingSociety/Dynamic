@@ -3040,7 +3040,7 @@ function library:Init(key)
                 Amount = #list
                 Val = (Amount * 20) + 20
             end
-            function selectorContainer:Open()
+            function Open()
                 selectorContainer.Visible = true
                 TweenService:Create(
                     selectorContainer,
@@ -3048,9 +3048,12 @@ function library:Init(key)
                     { Size = UDim2.fromScale(1, 1) }
                 ):Play()
             end
-            function selectorContainer:Close()
+            function Close()
                 selectorContainer.Visible = false
             end
+            selector.MouseButton1Click:Connect(function()
+                Open()
+            end)
             for i,v in next, list do
                 local optionButton = Instance.new("TextButton")
 
