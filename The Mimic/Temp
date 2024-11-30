@@ -91,6 +91,14 @@ coroutine.wrap(function()
     end)
 end)()
 
+function library:ToggleUI()
+    if game.CoreGui["screen"].Enabled then
+        game.CoreGui["screen"].Enabled = false
+    else
+        game.CoreGui["screen"].Enabled = true
+    end
+end
+
 function library:RoundNumber(int, float)
     return tonumber(string.format("%." .. (int or 0) .. "f", float))
 end
