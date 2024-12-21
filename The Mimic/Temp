@@ -91,26 +91,11 @@ coroutine.wrap(function()
     end)
 end)()
 
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local CursorControlGui = Instance.new("ScreenGui")
-CursorControlGui.Name = "CursorControlGui"
-CursorControlGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
-local FreeCursor = Instance.new("TextButton", CursorControlGui)
-FreeCursor.Name = "FreeCursor"
-FreeCursor.Size = UDim2.new(1, 0, 1, 0)
-FreeCursor.Position = UDim2.new(0, 0, 0, 0)
-FreeCursor.BackgroundTransparency = 1
-FreeCursor.Text = ""
-FreeCursor.Modal = true
-FreeCursor.Parent = screenGui
 function library:ToggleUI()
     if game.CoreGui["screen"].Enabled then
         game.CoreGui["screen"].Enabled = false
-        FreeCursor.Visible = false
     else
         game.CoreGui["screen"].Enabled = true
-        FreeCursor.Visible = true
     end
 end
 
