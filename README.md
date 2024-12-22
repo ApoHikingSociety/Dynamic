@@ -1,5 +1,7 @@
 # Dynamic
-First project
+**Supported Games:**
+- The Mimic (Almost Finished)
+- Blox Fruits (WIP)
 
 # Script
 ```ruby
