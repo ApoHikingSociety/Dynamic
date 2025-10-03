@@ -141,6 +141,10 @@ end
 
 function DynamicUI.new(config)
 	local self = setmetatable({}, DynamicUI)
+	local Players = game:GetService("Players")
+	local RunService = game:GetService("RunService")
+	local Lighting = game:GetService("Lighting")
+	local HttpService = game:GetService("HttpService")
 	local LocalPlayer = Players.LocalPlayer
 	local PlayerGui = (LocalPlayer and LocalPlayer:FindFirstChild("PlayerGui")) or PlayerGui
 	self.Config = self.Config or {}
@@ -167,32 +171,22 @@ function DynamicUI.new(config)
 		customColors[i] = self.Config.CustomColors[i] or self.Config.CustomColors[((i - 1) % # self.Config.CustomColors) + 1]
 	end
 	local function safeIsFile(p)
-		local ok, res = pcall(function()
-			return isfile(p)
-		end)
+		local ok, res = pcall(function() return isfile(p) end)
 		return ok and res
 	end
 	local function safeWriteFile(p, d)
-		pcall(function()
-			writefile(p, d)
-		end)
+		pcall(function() writefile(p, d) end)
 	end
 	local function safeReadFile(p)
-		local ok, res = pcall(function()
-			return readfile(p)
-		end)
+		local ok, res = pcall(function() return readfile(p) end)
 		return ok and res or nil
 	end
 	local function safeListFiles(p)
-		local ok, res = pcall(function()
-			return listfiles(p)
-		end)
+		local ok, res = pcall(function() return listfiles(p) end)
 		return ok and (res or {})
 	end
 	local function safeGetCustomAsset(p)
-		local ok, res = pcall(function()
-			return getcustomasset(p)
-		end)
+		local ok, res = pcall(function() return getcustomasset(p) end)
 		return ok and res or nil
 	end
 	local function ensureFolder(path)
@@ -209,21 +203,18 @@ function DynamicUI.new(config)
 	self.Images = {}
 	local httpRequest = (syn and syn.request) or http_request or request
 	local function fetchImage(name, url)
-		local path = ("Dynamic/Assets/Images/%s.png"):format(name)
-		if not safeIsFile(path) and httpRequest then
-			local res = httpRequest({
-				Url = url,
-				Method = "GET"
-			})
-			if res and res.Body then
+		local path = ("Dynamic/Assets/Images/%s.%s"):format(name, url:match("%.(%w+)$") or "png")
+		if not safeIsFile(path) and httpRequest and type(url) == "string" and url:match("^https?://") then
+			local ok, res = pcall(function()
+				return httpRequest({Url = url, Method = "GET"})
+			end)
+			if ok and res and res.Body then
 				safeWriteFile(path, res.Body)
 			end
 		end
 		if safeIsFile(path) then
-			local ok, asset = pcall(function()
-				return getcustomasset(path)
-			end)
-			if ok and asset then
+			local asset = safeGetCustomAsset(path)
+			if asset then
 				self.Images[name] = asset
 			end
 		end
@@ -246,36 +237,75 @@ function DynamicUI.new(config)
 	for _, file in ipairs(safeListFiles("Dynamic/Assets/Images")) do
 		if file:match("%.png$") or file:match("%.jpe?g$") then
 			local n = file:match("([^/\\]+)%.%w+$")
-			if not self.Images[n] then
-				local ok, asset = pcall(function()
-					return getcustomasset(file)
-				end)
-				if ok and asset then
+			if n and not self.Images[n] then
+				local asset = safeGetCustomAsset(file)
+				if asset then
+					self.Images[n] = asset
+				end
+			end
+		end
+	end
+	local function autoImportImagesFromFolder(folderPath)
+		local files = safeListFiles(folderPath)
+		for _, file in ipairs(files) do
+			if file:match("%.png$") or file:match("%.jpe?g$") or file:match("%.webp$") then
+				local name = file:match("([^/\\]+)%.%w+$")
+				if name and not self.Images[name] then
+					local asset = safeGetCustomAsset(file)
+					if asset then
+						self.Images[name] = asset
+					else
+						if httpRequest and file:match("^https?://") then
+							fetchImage(name, file)
+						end
+					end
+				end
+			end
+		end
+	end
+	autoImportImagesFromFolder("Dynamic/Assets/Images")
+	autoImportImagesFromFolder("/Assests/Icons")
+	for _, file in ipairs(safeListFiles("/Assests/Icons")) do
+		if file:match("%.png$") or file:match("%.jpe?g$") then
+			local n = file:match("([^/\\]+)%.%w+$")
+			if n and not self.Images[n] then
+				local asset = safeGetCustomAsset(file)
+				if asset then
 					self.Images[n] = asset
 				end
 			end
 		end
 	end
 	function self:GetImage(n)
-		return self.Images[n] or self.Images["Default"]
+		if not n then return nil end
+		if self.Images[n] then return self.Images[n] end
+		local tries = {
+			("Dynamic/Assets/Images/%s.png"):format(n),
+			("Dynamic/Assets/Images/%s.jpg"):format(n),
+			("/Assests/Icons/%s.png"):format(n),
+			("/Assests/Icons/%s.jpg"):format(n)
+		}
+		for _, p in ipairs(tries) do
+			local asset = safeGetCustomAsset(p)
+			if asset then
+				self.Images[n] = asset
+				return asset
+			end
+		end
+		return nil
 	end
 	self.Sounds = {}
 	local function fetchSound(name, url)
-		local path = ("Dynamic/Assets/Sounds/%s.mp3"):format(name)
-		if not safeIsFile(path) and httpRequest then
-			local res = httpRequest({
-				Url = url,
-				Method = "GET"
-			})
-			if res and res.Body then
+		local path = ("Dynamic/Assets/Sounds/%s.%s"):format(name, url:match("%.(%w+)$") or "mp3")
+		if not safeIsFile(path) and httpRequest and type(url) == "string" and url:match("^https?://") then
+			local ok, res = pcall(function() return httpRequest({Url = url, Method = "GET"}) end)
+			if ok and res and res.Body then
 				safeWriteFile(path, res.Body)
 			end
 		end
 		if safeIsFile(path) then
-			local ok, asset = pcall(function()
-				return getcustomasset(path)
-			end)
-			if ok and asset then
+			local asset = safeGetCustomAsset(path)
+			if asset then
 				self.Sounds[name] = asset
 			end
 		end
@@ -294,11 +324,9 @@ function DynamicUI.new(config)
 	for _, file in ipairs(safeListFiles("Dynamic/Assets/Sounds")) do
 		if file:match("%.mp3$") or file:match("%.wav$") then
 			local n = file:match("([^/\\]+)%.%w+$")
-			if not self.Sounds[n] then
-				local ok, asset = pcall(function()
-					return getcustomasset(file)
-				end)
-				if ok and asset then
+			if n and not self.Sounds[n] then
+				local asset = safeGetCustomAsset(file)
+				if asset then
 					self.Sounds[n] = asset
 				end
 			end
@@ -313,7 +341,6 @@ function DynamicUI.new(config)
 	self.ScreenGui.ResetOnSpawn = false
 	self.ScreenGui.Parent = PlayerGui
 	self.Tabs, self.Visible = {}, false
-	local HttpService = game:GetService("HttpService")
 	self.Flags = self.Flags or {}
 	self._flagControls = self._flagControls or {}
 	local WatermarkGui = Instance.new("ScreenGui")
@@ -334,26 +361,12 @@ function DynamicUI.new(config)
 	watermark.TextXAlignment = Enum.TextXAlignment.Left
 	watermark.ZIndex = 999999
 	watermark.Parent = WatermarkGui
-	self:CreateTextLift(watermark, {
-		OffsetX = 1.2,
-		OffsetY = 1,
-		Color = Color3.fromRGB(0, 0, 0),
-		Transparency = 0
-	})
-	local glowImage = self:CreateGlowImage(watermark, {
-		ImageTransparency = 0.8,
-		ImageColor3 = Color3.fromRGB(255, 255, 255)
-	})
-	local Lighting = game:GetService("Lighting")
+	local glowImage = self:CreateGlowImage(watermark, {ImageTransparency = 0.8, ImageColor3 = Color3.fromRGB(255, 255, 255)})
 	local rainbowOffset, customOffset = 0, 0
-	local function clamp(x, a, b)
-		return math.max(a, math.min(b, x))
-	end
+	local function clamp(x, a, b) return math.max(a, math.min(b, x)) end
 	local function nColorBlend(t)
-		local count = clamp(math.floor(self.Config.CustomColorCount or 1 + 0.5), 1, 7)
-		if count <= 1 then
-			return customColors[1]
-		end
+		local count = clamp(math.floor((self.Config.CustomColorCount or 1) + 0.5), 1, 7)
+		if count <= 1 then return customColors[1] end
 		local seg = (t % 1) * count
 		local idx = math.floor(seg) + 1
 		local frac = seg - math.floor(seg)
@@ -361,21 +374,18 @@ function DynamicUI.new(config)
 		return a:lerp(b, frac)
 	end
 	local function applySequence(seq)
-    -- sync watermark text gradient
 		if not watermark:FindFirstChild("UIGradient") then
 			local g = Instance.new("UIGradient")
 			g.Rotation = 0
 			g.Parent = watermark
 		end
 		watermark.UIGradient.Color = seq
-
 		if not glowImage:FindFirstChild("UIGradient") then
 			local g = Instance.new("UIGradient")
 			g.Rotation = 0
 			g.Parent = glowImage
 		end
 		glowImage.UIGradient.Color = seq
-
 		if self.BackgroundVeil then
 			if not self.BackgroundVeil:FindFirstChild("UIGradient") then
 				local g = Instance.new("UIGradient")
@@ -384,7 +394,6 @@ function DynamicUI.new(config)
 			end
 			self.BackgroundVeil.UIGradient.Color = seq
 		end
-
 		for _, tab in ipairs(self.Tabs) do
 			for _, module in ipairs(tab.Modules) do
 				if module._Toggled and module._Gradient then
@@ -392,34 +401,21 @@ function DynamicUI.new(config)
 					module._Gradient.Color = seq
 					module.Button.BackgroundColor3 = Color3.new(1, 1, 1)
 				else
-					if module._Gradient then
-						module._Gradient.Enabled = false
-					end
+					if module._Gradient then module._Gradient.Enabled = false end
 					module.Button.BackgroundColor3 = Color3.fromRGB(28, 28, 28)
 				end
 				for _, element in ipairs(module.Elements) do
 					if element.Toggled or element.IsSlider or element.IsDropdown then
-						if element.Gradient then
-							element.Gradient.Color = seq
-						end
-						if element.ModifiedGradient then
-							element.ModifiedGradient.Color = seq
-						end
-						if element.Gradients then
-							for _, g in pairs(element.Gradients) do
-								g.Color = seq
-							end
-						end
+						if element.Gradient then element.Gradient.Color = seq end
+						if element.ModifiedGradient then element.ModifiedGradient.Color = seq end
+						if element.Gradients then for _, g in pairs(element.Gradients) do g.Color = seq end end
 					end
 				end
 			end
 		end
 		for _, item in pairs(self.ArraylistItems or {}) do
-			if item.Gradient then
-				item.Gradient.Color = seq
-			end
+			if item.Gradient then item.Gradient.Color = seq end
 		end
-
 	end
 	local function updateGradients(dt)
 		local speed = self.Config.RainbowSpeed or 1
@@ -427,37 +423,21 @@ function DynamicUI.new(config)
 			rainbowOffset = (rainbowOffset + dt * speed) % 1
 			local c1 = Color3.fromHSV(rainbowOffset, 1, 1)
 			local c2 = Color3.fromHSV((rainbowOffset + 0.1) % 1, 1, 1)
-			applySequence(ColorSequence.new{
-				ColorSequenceKeypoint.new(0, c1),
-				ColorSequenceKeypoint.new(1, c2)
-			})
+			applySequence(ColorSequence.new{ColorSequenceKeypoint.new(0, c1), ColorSequenceKeypoint.new(1, c2)})
 		elseif self.Config.Theme == "Custom" then
 			customOffset = (customOffset + dt * speed) % 1
 			local c1 = nColorBlend(customOffset)
 			local c2 = nColorBlend(customOffset + 0.1)
-			applySequence(ColorSequence.new{
-				ColorSequenceKeypoint.new(0, c1),
-				ColorSequenceKeypoint.new(1, c2)
-			})
+			applySequence(ColorSequence.new{ColorSequenceKeypoint.new(0, c1), ColorSequenceKeypoint.new(1, c2)})
 		else
 			for _, tab in ipairs(self.Tabs) do
 				for _, module in ipairs(tab.Modules) do
-					if module._Gradient then
-						module._Gradient.Enabled = false
-					end
+					if module._Gradient then module._Gradient.Enabled = false end
 					module.Button.BackgroundColor3 = module._Toggled and Color3.fromRGB(50, 50, 50) or Color3.fromRGB(28, 28, 28)
 					for _, element in ipairs(module.Elements) do
-						if element.ModifiedGradient then
-							element.ModifiedGradient.Enabled = false
-						end
-						if element.Gradient then
-							element.Gradient.Enabled = false
-						end
-						if element.Gradients then
-							for _, g in pairs(element.Gradients) do
-								g.Enabled = false
-							end
-						end
+						if element.ModifiedGradient then element.ModifiedGradient.Enabled = false end
+						if element.Gradient then element.Gradient.Enabled = false end
+						if element.Gradients then for _, g in pairs(element.Gradients) do g.Enabled = false end end
 					end
 				end
 			end
@@ -465,19 +445,12 @@ function DynamicUI.new(config)
 	end
 	RunService.RenderStepped:Connect(updateGradients)
 	updateGradients(0)
-
 	self.SettingsTab = self:AddTab("Settings")
 	self.SettingsTab.Holder.LayoutOrder = 999999
-
-	self.ClickGUIModule = self:AddModule(
-        self.SettingsTab, "Click Gui", Enum.KeyCode.Insert, true, function(toggled)
+	self.ClickGUIModule = self:AddModule(self.SettingsTab, "Click Gui", Enum.KeyCode.Insert, true, function(toggled)
 		self:ToggleUI(toggled)
-		if self.BackgroundFog then
-			self.BackgroundFog.Enabled = toggled
-		end
-		if self.BackgroundVeil then
-			self.BackgroundVeil.Visible = toggled
-		end
+		if self.BackgroundFog then self.BackgroundFog.Enabled = toggled end
+		if self.BackgroundVeil then self.BackgroundVeil.Visible = toggled end
 		self.Flags.ClickGUI = toggled
 	end)
 	self._flagControls["ClickGUI"] = self.ClickGUIModule
@@ -499,35 +472,14 @@ function DynamicUI.new(config)
 	veil.Visible = self.ClickGUIModule._Toggled
 	veil.Parent = self.ScreenGui
 	self.BackgroundVeil = veil
-	local animChoices = {
-		"Default",
-		"Fade",
-		"Bounce",
-		"Slide"
-	}
-	self:AddDropdown(self.ClickGUIModule, "Animation", animChoices, table.find(animChoices, self.Config.ClickGUIAnimation) or 1, function(choice)
-		self.Config.ClickGUIAnimation = choice
-	end)
-	self:AddSlider(self.ClickGUIModule, "Blur Strength", 0, 100, fog.Size, function(val)
-		fog.Size = val
-	end, nil, 1)
-
-	local interfaceModule = self:AddModule(self.SettingsTab, "Interface", nil, true, function()
-	end, "Interface", true, false)
-	self:AddDropdown(
-        interfaceModule, "Theme", {
-		"Rainbow",
-		"Custom"
-	}, (self.Config.Theme == "Rainbow") and 1 or 2, function(choice)
+	local animChoices = {"Default","Fade","Bounce","Slide"}
+	self:AddDropdown(self.ClickGUIModule, "Animation", animChoices, table.find(animChoices, self.Config.ClickGUIAnimation) or 1, function(choice) self.Config.ClickGUIAnimation = choice end)
+	self:AddSlider(self.ClickGUIModule, "Blur Strength", 0, 100, fog.Size, function(val) fog.Size = val end, nil, 1)
+	local interfaceModule = self:AddModule(self.SettingsTab, "Interface", nil, true, function() end, "Interface", true, false)
+	self:AddDropdown(interfaceModule, "Theme", {"Rainbow","Custom"}, (self.Config.Theme == "Rainbow") and 1 or 2, function(choice)
 		self.Config.Theme = choice
-		if self.colorCountSlider and self.colorCountSlider.RefreshVisibility then
-			self.colorCountSlider.RefreshVisibility()
-		end
-		for _, cp in ipairs(self.colorPickers) do
-			if cp.RefreshVisibility then
-				cp.RefreshVisibility()
-			end
-		end
+		if self.colorCountSlider and self.colorCountSlider.RefreshVisibility then self.colorCountSlider.RefreshVisibility() end
+		for _, cp in ipairs(self.colorPickers or {}) do if cp.RefreshVisibility then cp.RefreshVisibility() end end
 	end)
 	local hue = 0
 	RunService.RenderStepped:Connect(function(dt)
@@ -545,69 +497,43 @@ function DynamicUI.new(config)
 		end
 		applySequence(seq)
 	end)
-
 	local function customVisible(index)
-		if self.Config.Theme ~= "Custom" then
-			return false
-		end
-		if not index then
-			return true
-		end
+		if self.Config.Theme ~= "Custom" then return false end
+		if not index then return true end
 		return (self.Config.CustomColorCount or 1) >= index
 	end
 	self.colorPickers = {}
-	self.colorCountSlider = self:AddSlider(
-        interfaceModule, "Colors", 1, 7, self.Config.CustomColorCount, function(val)
+	self.colorCountSlider = self:AddSlider(interfaceModule, "Colors", 1, 7, self.Config.CustomColorCount, function(val)
 		local n = math.clamp(math.floor(val + 0.5), 1, 7)
 		self.Config.CustomColorCount = n
-		for _, cp in ipairs(self.colorPickers) do
-			if cp.RefreshVisibility then
-				cp.RefreshVisibility()
-			end
+		for _, cp in ipairs(self.colorPickers) do if cp.RefreshVisibility then cp.RefreshVisibility() end end
+	end, function() return customVisible() end, 0)
+	self.colorCountSlider.RefreshVisibility = function()
+		local visible = customVisible()
+		if self.colorCountSlider.SetVisible then
+			self.colorCountSlider:SetVisible(visible)
+		else
+			self.colorCountSlider.Visible = visible
 		end
-	end, function()
-		return customVisible()
-	end, 0)
+	end
 	for i = 1, 7 do
-		self.colorPickers[i] = self:AddColorKey(
-            interfaceModule, ("Color %d"):format(i), customColors[i], function(c)
+		local cp = self:AddColorKey(interfaceModule, ("Color %d"):format(i), customColors[i], function(c)
 			customColors[i] = c
 			self.Config.CustomColors[i] = c
-		end, function()
-			return customVisible(i)
-		end)
-		self._flagControls["Color" .. i] = self.colorPickers[i]
+		end, function() return customVisible(i) end)
+		cp.RefreshVisibility = function()
+			local visible = customVisible(i)
+			if cp.SetVisible then cp:SetVisible(visible) elseif cp.Visible ~= nil then cp.Visible = visible end
+		end
+		self.colorPickers[i] = cp
+		self._flagControls["Color" .. i] = cp
 		self.Flags["Color" .. i] = customColors[i]
 	end
-	if self.colorCountSlider.RefreshVisibility then
-		self.colorCountSlider.RefreshVisibility()
-	end
-	for _, cp in ipairs(self.colorPickers) do
-		if cp.RefreshVisibility then
-			cp.RefreshVisibility()
-		end
-	end
-	self:AddSlider(interfaceModule, "Color Speed", 0.1, 5, self.Config.RainbowSpeed, function(val)
-		self.Config.RainbowSpeed = val
-	end, nil, 2)
-	self.Skyboxes = {
-		sky512 = {
-			SkyboxBk = "https://raw.githubusercontent.com/ApoHikingSociety/Dynamic/main/Library/Assets/Skyboxes/sky512_bk.png",
-			SkyboxFt = "https://raw.githubusercontent.com/ApoHikingSociety/Dynamic/main/Library/Assets/Skyboxes/sky512_ft.png",
-			SkyboxLf = "https://raw.githubusercontent.com/ApoHikingSociety/Dynamic/main/Library/Assets/Skyboxes/sky512_lf.png",
-			SkyboxRt = "https://raw.githubusercontent.com/ApoHikingSociety/Dynamic/main/Library/Assets/Skyboxes/sky512_rt.png",
-			SkyboxUp = "https://raw.githubusercontent.com/ApoHikingSociety/Dynamic/main/Library/Assets/Skyboxes/sky512_up.png",
-			SkyboxDn = "https://raw.githubusercontent.com/ApoHikingSociety/Dynamic/main/Library/Assets/Skyboxes/sky512_dn.png",
-		}
-	}
-	local skyFaces = {
-		Up = "SkyboxUp",
-		Dn = "SkyboxDn",
-		Ft = "SkyboxFt",
-		Bk = "SkyboxBk",
-		Lf = "SkyboxLf",
-		Rt = "SkyboxRt"
-	}
+	if self.colorCountSlider.RefreshVisibility then self.colorCountSlider.RefreshVisibility() end
+	for _, cp in ipairs(self.colorPickers) do if cp.RefreshVisibility then cp.RefreshVisibility() end end
+	self:AddSlider(interfaceModule, "Color Speed", 0.1, 5, self.Config.RainbowSpeed, function(val) self.Config.RainbowSpeed = val end, nil, 2)
+	self.Skyboxes = { sky512 = { SkyboxBk = "https://raw.githubusercontent.com/ApoHikingSociety/Dynamic/main/Library/Assets/Skyboxes/sky512_bk.png", SkyboxFt = "https://raw.githubusercontent.com/ApoHikingSociety/Dynamic/main/Library/Assets/Skyboxes/sky512_ft.png", SkyboxLf = "https://raw.githubusercontent.com/ApoHikingSociety/Dynamic/main/Library/Assets/Skyboxes/sky512_lf.png", SkyboxRt = "https://raw.githubusercontent.com/ApoHikingSociety/Dynamic/main/Library/Assets/Skyboxes/sky512_rt.png", SkyboxUp = "https://raw.githubusercontent.com/ApoHikingSociety/Dynamic/main/Library/Assets/Skyboxes/sky512_up.png", SkyboxDn = "https://raw.githubusercontent.com/ApoHikingSociety/Dynamic/main/Library/Assets/Skyboxes/sky512_dn.png", } }
+	local skyFaces = { Up = "SkyboxUp", Dn = "SkyboxDn", Ft = "SkyboxFt", Bk = "SkyboxBk", Lf = "SkyboxLf", Rt = "SkyboxRt" }
 	for name, faces in pairs(self.Skyboxes) do
 		if type(faces) == "table" then
 			for faceName, url in pairs(faces) do
@@ -616,13 +542,8 @@ function DynamicUI.new(config)
 					local filename = ("Dynamic/Assets/Skyboxes/%s_%s.%s"):format(name, faceName, ext)
 					if not safeIsFile(filename) then
 						pcall(function()
-							local res = httpRequest({
-								Url = url,
-								Method = "GET"
-							})
-							if res and res.Body then
-								safeWriteFile(filename, res.Body)
-							end
+							local res = httpRequest({ Url = url, Method = "GET" })
+							if res and res.Body then safeWriteFile(filename, res.Body) end
 						end)
 					end
 				end
@@ -632,29 +553,21 @@ function DynamicUI.new(config)
 	for _, file in ipairs(safeListFiles("Dynamic/Assets/Skyboxes")) do
 		if file:match("%.png$") or file:match("%.jpe?g$") then
 			local base, face = file:match("([^/\\]+)_(Skybox%a+)%.[^%.]+$")
-			if not base then
-				base, face = file:match("([^/\\]+)([A-Z][a-z][A-Za-z]*)%.[^%.]+$")
-			end
+			if not base then base, face = file:match("([^/\\]+)([A-Z][a-z][A-Za-z]*)%.[^%.]+$") end
 			if base and face and skyFaces[face:gsub("Skybox", "") or face] then
 				local nameOnly = base
 				self.Skyboxes[nameOnly] = self.Skyboxes[nameOnly] or {}
 				local asset = safeGetCustomAsset(file)
 				if asset then
 					local faceKey = face
-					if not faceKey:match("^Skybox") then
-						faceKey = skyFaces[face] or faceKey
-					end
+					if not faceKey:match("^Skybox") then faceKey = skyFaces[face] or faceKey end
 					self.Skyboxes[nameOnly][faceKey] = asset
 				end
 			end
 		end
 	end
 	local function clearSkies()
-		for _, obj in ipairs(Lighting:GetChildren()) do
-			if obj:IsA("Sky") then
-				obj:Destroy()
-			end
-		end
+		for _, obj in ipairs(Lighting:GetChildren()) do if obj:IsA("Sky") then obj:Destroy() end end
 	end
 	local function createDefaultSky()
 		clearSkies()
@@ -669,323 +582,153 @@ function DynamicUI.new(config)
 		defaultSky.Parent = Lighting
 	end
 	local function applySky(name)
-		if not name then
-			return
-		end
+		if not name then return end
 		local faces = self.Skyboxes[name]
-		if not faces or type(faces) ~= "table" then
-			return
-		end
+		if not faces or type(faces) ~= "table" then return end
 		clearSkies()
 		local sky = Instance.new("Sky")
 		sky.Name = name
-		for faceKey, asset in pairs(faces) do
-			pcall(function()
-				sky[faceKey] = asset
-			end)
-		end
+		for faceKey, asset in pairs(faces) do pcall(function() sky[faceKey] = asset end) end
 		sky.Parent = Lighting
 	end
 	local skyboxModule = self:AddModule(self.SettingsTab, "Skybox", nil, true, function(enabled)
-		if not enabled then
-			createDefaultSky()
-		else
-			if currentSelection then
-				applySky(currentSelection)
-			else
-				local t = {}
-				for n, f in pairs(self.Skyboxes) do
-					if type(f) == "table" then
-						table.insert(t, n)
-					end
-				end
-				table.sort(t)
-				if t[1] then
-					currentSelection = t[1];
-					applySky(t[1])
-				end
-			end
-		end
-	end)
+		if not enabled then createDefaultSky() else if currentSelection then applySky(currentSelection) else local t = {} for n, f in pairs(self.Skyboxes) do if type(f) == "table" then table.insert(t, n) end end table.sort(t) if t[1] then currentSelection = t[1]; applySky(t[1]) end end end)
 	local currentSelection = nil
 	local skyNames = {}
-	for name, faces in pairs(self.Skyboxes) do
-		if type(faces) == "table" then
-			table.insert(skyNames, name)
-		end
-	end
+	for name, faces in pairs(self.Skyboxes) do if type(faces) == "table" then table.insert(skyNames, name) end end
 	table.sort(skyNames)
-	self:AddDropdown(skyboxModule, "Select Skybox", skyNames, 1, function(selectedName)
-		currentSelection = selectedName
-		if skyboxModule._Toggled then
-			applySky(selectedName)
-		end
-		self.Flags.SelectedSkybox = selectedName
-	end)
+	self:AddDropdown(skyboxModule, "Select Skybox", skyNames, 1, function(selectedName) currentSelection = selectedName if skyboxModule._Toggled then applySky(selectedName) end self.Flags.SelectedSkybox = selectedName end)
 	self._flagControls["SelectedSkybox"] = skyboxModule
 	self.Flags.SelectedSkybox = skyNames[1]
 	local defaultName = skyNames[1]
-	if defaultName then
-		currentSelection = defaultName
-		if skyboxModule._Toggled then
-			applySky(defaultName)
-		else
-			createDefaultSky()
-		end
-	end
-
+	if defaultName then currentSelection = defaultName if skyboxModule._Toggled then applySky(defaultName) else createDefaultSky() end end
 	function self:SaveConfig(filename)
-		if not filename or filename == "" then
-			return false
-		end
-		local ok, encoded = pcall(function()
-			return HttpService:JSONEncode(self.Flags or {})
-		end)
-		if not ok or not encoded then
-			return false
-		end
+		if not filename or filename == "" then return false end
+		local ok, encoded = pcall(function() return HttpService:JSONEncode(self.Flags or {}) end)
+		if not ok or not encoded then return false end
 		local path = ("Dynamic/Config/%s.json"):format(filename)
-		pcall(function()
-			writefile(path, encoded)
-		end)
+		pcall(function() writefile(path, encoded) end)
 		return true
 	end
 	function self:LoadConfig(filename)
-		if not filename or filename == "" then
-			return false
-		end
+		if not filename or filename == "" then return false end
 		local path = ("Dynamic/Config/%s.json"):format(filename)
 		local raw = safeReadFile(path)
-		if not raw then
-			return false
-		end
-		local ok, data = pcall(function()
-			return HttpService:JSONDecode(raw)
-		end)
-		if not ok or type(data) ~= "table" then
-			return false
-		end
-
+		if not raw then return false end
+		local ok, data = pcall(function() return HttpService:JSONDecode(raw) end)
+		if not ok or type(data) ~= "table" then return false end
 		for k, v in pairs(data) do
 			self.Flags[k] = v
 			local control = self._flagControls and self._flagControls[k]
 			if control then
 				if type(control) == "table" then
-					if control.SetValue and type(control.SetValue) == "function" then
-						pcall(function()
-							control:SetValue(v)
-						end)
-					elseif control.Set and type(control.Set) == "function" then
-						pcall(function()
-							control:Set(v)
-						end)
-					elseif control.SetToggleState and type(control.SetToggleState) == "function" then
-						pcall(function()
-							control:SetToggleState(v)
-						end)
-					elseif control._Toggled ~= nil then
-						pcall(function()
-							control._Toggled = v
-							DynamicUI:UpdateModuleVisualState(control)
-							if control.Callback then
-								pcall(control.Callback, control._Toggled)
-							end
-						end)
-					else
-						pcall(function()
-							control.Value = v
-						end)
-					end
-				else
-					pcall(function()
-						control.Value = v
-					end)
+					if control.SetValue and type(control.SetValue) == "function" then pcall(function() control:SetValue(v) end)
+					elseif control.Set and type(control.Set) == "function" then pcall(function() control:Set(v) end)
+					elseif control.SetToggleState and type(control.SetToggleState) == "function" then pcall(function() control:SetToggleState(v) end)
+					elseif control._Toggled ~= nil then pcall(function() control._Toggled = v DynamicUI:UpdateModuleVisualState(control) if control.Callback then pcall(control.Callback, control._Toggled) end end)
+					else pcall(function() control.Value = v end)
+				end
+				else pcall(function() control.Value = v end)
 				end
 			end
 		end
 		return true
 	end
-	function self:RegisterFlag(name, defaultValue, controlRef)
-		if not name then
-			return
-		end
-		self.Flags[name] = self.Flags[name] ~= nil and self.Flags[name] or defaultValue
-		if controlRef then
-			self._flagControls[name] = controlRef
-		end
-	end
-
-	local HttpService = game:GetService("HttpService")
 	local configFolder = "Dynamic/Config"
 	ensureFolder(configFolder)
 	local currentConfigName = "default"
 	local pendingName = ""
-
-	local function safeReadFile(path)
-		local ok, res = pcall(function()
-			return readfile(path)
-		end)
-		return ok and res or nil
-	end
 	local function listConfigNames()
 		local names = {}
 		for _, f in ipairs(listfiles(configFolder)) do
 			local n = f:match("([^/\\]+)%.json$")
-			if n then
-				table.insert(names, n)
-			end
+			if n then table.insert(names, n) end
 		end
 		table.sort(names)
-		if not table.find(names, "default") then
-			table.insert(names, 1, "default")
-		end
+		if not table.find(names, "default") then table.insert(names, 1, "default") end
 		return names
 	end
 	local function loadInitialConfig()
 		local p = string.format("%s/%s.json", configFolder, currentConfigName)
 		local raw = safeReadFile(p)
-		if not raw then
-			return {}
-		end
-		local ok, data = pcall(function()
-			return HttpService:JSONDecode(raw)
-		end)
+		if not raw then return {} end
+		local ok, data = pcall(function() return HttpService:JSONDecode(raw) end)
 		return ok and type(data) == "table" and data or {}
 	end
 	self.Flags = loadInitialConfig()
 	self._flagControls = {}
 	local function autoSave()
-		local ok, encoded = pcall(function()
-			return HttpService:JSONEncode(self.Flags)
-		end)
-		if ok then
-			pcall(function()
-				writefile(string.format("%s/%s.json", configFolder, currentConfigName), encoded)
-			end)
-		end
+		local ok, encoded = pcall(function() return HttpService:JSONEncode(self.Flags) end)
+		if ok then pcall(function() writefile(string.format("%s/%s.json", configFolder, currentConfigName), encoded) end) end
 	end
 	local function SetFromLoad(control, value)
 		if type(control) == "table" then
-			if control.SetValue then
-				control:SetValue(value, true)
-			elseif control.Set then
-				control:Set(value, true)
-			elseif control.SetToggleState then
-				control:SetToggleState(value, true)
-			elseif control.Value ~= nil then
-				control.Value = value
-			end
+			if control.SetValue then control:SetValue(value, true)
+			elseif control.Set then control:Set(value, true)
+			elseif control.SetToggleState then control:SetToggleState(value, true)
+			elseif control.Value ~= nil then control.Value = value end
 		end
 	end
 	function self:RegisterFlag(name, defaultValue, controlRef)
-		if not name then
-			return
-		end
-		if self.Flags[name] == nil then
-			self.Flags[name] = defaultValue
-		end
-		if controlRef then
-			self._flagControls[name] = controlRef
-			SetFromLoad(controlRef, self.Flags[name])
-		end
+		if not name then return end
+		if self.Flags[name] == nil then self.Flags[name] = defaultValue end
+		if controlRef then self._flagControls[name] = controlRef SetFromLoad(controlRef, self.Flags[name]) end
 		if controlRef then
 			if controlRef.SetValue then
 				local old = controlRef.SetValue
 				function controlRef:SetValue(v, silent)
 					old(self, v)
-					if not silent then
-						self.Flags[name] = v;
-						autoSave()
-					end
+					if not silent then self.Flags[name] = v; autoSave() end
 				end
 			elseif controlRef.Set then
 				local old = controlRef.Set
 				function controlRef:Set(v, silent)
 					old(self, v)
-					if not silent then
-						self.Flags[name] = v;
-						autoSave()
-					end
+					if not silent then self.Flags[name] = v; autoSave() end
 				end
 			elseif controlRef.SetToggleState then
 				local old = controlRef.SetToggleState
 				function controlRef:SetToggleState(v, silent)
 					old(self, v, silent)
-					if not silent then
-						self.Flags[name] = v;
-						autoSave()
-					end
+					if not silent then self.Flags[name] = v; autoSave() end
 				end
 			end
 		end
 	end
-	setmetatable(self.Flags, {
-		__newindex = function(t, k, v)
-			rawset(t, k, v)
-			autoSave()
-		end
-	})
-
+	setmetatable(self.Flags, { __newindex = function(t, k, v) rawset(t, k, v) autoSave() end })
 	local configDropdown
 	local function refreshConfigDropdown()
-		if configDropdown and configDropdown.Refresh then
-			configDropdown:Refresh(listConfigNames(), currentConfigName)
-		end
+		if configDropdown and configDropdown.Refresh then configDropdown:Refresh(listConfigNames(), currentConfigName) end
 	end
-
-	local configModule = self:AddModule(
-    self.SettingsTab, "Config", nil, true, function()
-        -- Manual Save
+	local configModule = self:AddModule(self.SettingsTab, "Config", nil, true, function()
 		local name = (pendingName ~= "" and pendingName) or currentConfigName
 		currentConfigName = name
 		autoSave()
-		print(("Saved configuration: %s"):format(currentConfigName))
 		refreshConfigDropdown()
 	end, "Config", true, false)
-
-	self:AddInputBox(
-    configModule, "New Config Name", "", function(txt, enterPressed)
+	self:AddInputBox(configModule, "New Config Name", "", function(txt, enterPressed)
 		pendingName = txt and txt:gsub("[%c%p%s]+", "_") or ""
 		if enterPressed and pendingName ~= "" then
 			local path = string.format("%s/%s.json", configFolder, pendingName)
-			if not isfile(path) then
-				writefile(path, "{}")
-			end
+			if not isfile(path) then writefile(path, "{}") end
 			currentConfigName = pendingName
 			autoSave()
-
 			refreshConfigDropdown()
-			print("Created and loaded new config:", pendingName)
 		end
 	end)
-
-	configDropdown = self:AddDropdown(
-    configModule, "Select Config", listConfigNames(), currentConfigName, function(selected)
-		if not selected or selected == "" then
-			return
-		end
+	configDropdown = self:AddDropdown(configModule, "Select Config", listConfigNames(), currentConfigName, function(selected)
+		if not selected or selected == "" then return end
 		currentConfigName = selected
 		local path = string.format("%s/%s.json", configFolder, currentConfigName)
 		local raw = safeReadFile(path)
-		if not raw then
-			return
-		end
-		local ok, data = pcall(function()
-			return HttpService:JSONDecode(raw)
-		end)
-		if ok and type(data) == "table" then
-			for k, v in pairs(data) do
-				self.Flags[k] = v
-				local c = self._flagControls[k]
-				if c then
-					SetFromLoad(c, v)
-				end
-			end
-		end
+		if not raw then return end
+		local ok, data = pcall(function() return HttpService:JSONDecode(raw) end)
+		if ok and type(data) == "table" then for k, v in pairs(data) do self.Flags[k] = v local c = self._flagControls[k] if c then SetFromLoad(c, v) end end end
 	end)
 	self:AddArraylist()
 	return self
 end
+
 
 function DynamicUI:AddArraylist()
     local task = task
