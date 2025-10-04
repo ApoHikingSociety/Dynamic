@@ -2453,6 +2453,14 @@ function DynamicUI:AddColorKey(module, elementName, defaultColor, callback, cond
 end
 
 
+--[[--------------------------------------------------------------
+DynamicUI:AddDropdown
+Creates a dropdown UI element with:
+ • left-click to cycle through options
+ • right-click to expand/collapse full list
+ • highlight + gradient tracking
+----------------------------------------------------------------]]
+
 function DynamicUI:AddDropdown(module, elementName, options, defaultValue, callback, flagName, multiSelect)
     self._flagControls = self._flagControls or {}
     self.Flags = self.Flags or {}
