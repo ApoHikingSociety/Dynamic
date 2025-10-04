@@ -28,16 +28,6 @@ DynamicUI.Config = {
         OffsetY = 1,
         Transparency = 0.5,
         Color = Color3.new(0,0,0),
-    },
-
-    CustomColors = {
-        [1] = Color3.fromRGB(255, 255, 255),
-        [2] = Color3.fromRGB(255, 255, 255),
-        [3] = Color3.fromRGB(255, 255, 255),
-        [4] = Color3.fromRGB(255, 255, 255),
-        [5] = Color3.fromRGB(255, 255, 255),
-        [6] = Color3.fromRGB(255, 255, 255),
-        [7] = Color3.fromRGB(255, 255, 255),
     }
 }
 
@@ -666,7 +656,7 @@ function DynamicUI.new(config)
 				cp.RefreshVisibility()
 			end
 		end
-	end, "Interface_Theme", false)
+	end)
 	local hue = 0
 	RunService.RenderStepped:Connect(function(dt)
 		hue = (hue + dt * (self.Config.RainbowSpeed or 0.1)) % 1
@@ -707,16 +697,15 @@ function DynamicUI.new(config)
 		return customVisible()
 	end, 0)
 	for i = 1, 7 do
-        local flagName = "Interface_Color" .. i
 		self.colorPickers[i] = self:AddColorKey(
             interfaceModule, ("Color %d"):format(i), customColors[i], function(c)
 			customColors[i] = c
 			self.Config.CustomColors[i] = c
 		end, function()
 			return customVisible(i)
-		end, flagName)
-		self._flagControls[flagName] = self.colorPickers[i]
-		self.Flags[flagName] = customColors[i]
+		end)
+		self._flagControls["Color" .. i] = self.colorPickers[i]
+		self.Flags["Color" .. i] = customColors[i]
 	end
 	if self.colorCountSlider.RefreshVisibility then
 		self.colorCountSlider.RefreshVisibility()
@@ -1323,11 +1312,7 @@ function DynamicUI:AddArraylist()
         end
         if UI.ArraylistSortMode == "Length" then
             table.sort(active, function(a, b)
-                local aw, bw = 0, 0
-                local ai, bi = UI.ArraylistItems[a], UI.ArraylistItems[b]
-                if ai and ai.Button then aw = ai.Button.TextBounds.X end
-                if bi and bi.Button then bw = bi.Button.TextBounds.X end
-                return aw > bw
+                return #(a.Name:gsub("%s+", "")) > #(b.Name:gsub("%s+", ""))
             end)
         else
             table.sort(active, function(a, b)
@@ -1453,6 +1438,7 @@ function DynamicUI:ApplySequence(seq)
     end
     if self.OldApplySequence then self:OldApplySequence(seq) end
 end
+
 
 ---------------------------------------------------------------------
 -- TABS
