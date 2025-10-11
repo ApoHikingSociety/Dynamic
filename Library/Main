@@ -2145,8 +2145,7 @@ function DynamicUI:AddColorKey(module, elementName, defaultColor, callback, cond
     module.Settings = module.Settings or Instance.new("Frame")
     module.Elements = module.Elements or {}
     flagName = flagName or elementName
-
-    -- Utility functions for color conversion
+    
     local function rgbToHsv(c)
         local r, g, b = c.R, c.G, c.B
         local max, min = math.max(r, g, b), math.min(r, g, b)
@@ -2154,18 +2153,14 @@ function DynamicUI:AddColorKey(module, elementName, defaultColor, callback, cond
         local d = max - min
         if max > 0 then s = d / max end
         if d > 0 then
-            if max == r then
-                h = ((g - b) / d) % 6
-            elseif max == g then
-                h = ((b - r) / d) + 2
-            else
-                h = ((r - g) / d) + 4
-            end
+            if max == r then h = ((g - b) / d) % 6
+            elseif max == g then h = ((b - r) / d) + 2
+            else h = ((r - g) / d) + 4 end
             h = h / 6
         end
         return h, s, v
     end
-
+    
     local function hsvToRgb(h, s, v)
         local i = math.floor(h * 6)
         local f = h * 6 - i
@@ -2181,20 +2176,29 @@ function DynamicUI:AddColorKey(module, elementName, defaultColor, callback, cond
         else r, g, b = v, p, q end
         return Color3.new(r, g, b)
     end
-
+    
+    -- Initialize default color and check existing flag
     defaultColor = defaultColor or Color3.new(1, 1, 1)
-    if self.Flags[flagName] then defaultColor = self.Flags[flagName] end
-    local h, s, v = rgbToHsv(defaultColor)
     local currentColor = defaultColor
-    self.Flags[flagName] = currentColor  -- Store as direct Color3
-
-    -- UI Row and Elements
+    
+    -- Check if flag already exists and is a valid Color3
+    if self.Flags[flagName] and typeof(self.Flags[flagName]) == "Color3" then
+        currentColor = self.Flags[flagName]
+    end
+    
+    -- Initialize HSV values from current color
+    local h, s, v = rgbToHsv(currentColor)
+    
+    -- Set the flag immediately with the current color
+    self.Flags[flagName] = currentColor
+    
+    -- Create UI elements
     local row = Instance.new("Frame")
     row.Name = elementName .. "_ColorToggle"
     row.Size = UDim2.new(1, 0, 0, 25)
     row.BackgroundTransparency = 1
     row.Parent = module.Settings
-
+    
     local label = Instance.new("TextLabel")
     label.Size = UDim2.new(0.8, 0, 1, 0)
     label.BackgroundTransparency = 1
@@ -2204,11 +2208,11 @@ function DynamicUI:AddColorKey(module, elementName, defaultColor, callback, cond
     label.TextColor3 = Color3.new(1, 1, 1)
     label.TextXAlignment = Enum.TextXAlignment.Left
     label.Parent = row
-
+    
     local labelPadding = Instance.new("UIPadding", label)
     labelPadding.PaddingLeft = UDim.new(0, 5)
     labelPadding.PaddingBottom = UDim.new(0, 5)
-
+    
     local swatch = Instance.new("ImageButton")
     swatch.Size = UDim2.new(0, 15, 0, 25)
     swatch.AnchorPoint = Vector2.new(1, 0.5)
@@ -2217,23 +2221,34 @@ function DynamicUI:AddColorKey(module, elementName, defaultColor, callback, cond
     swatch.AutoButtonColor = false
     swatch.BorderSizePixel = 0
     swatch.Parent = row
-
-    -- Popup logic
+    
     local popupGui
     local POPUP_W, POPUP_H = 190, 150
     local WHEEL_SZ, WHEEL_PADDING = 110, 8
-
+    
     local function clampScreenPos(x, y, w, h)
         local cam = workspace.CurrentCamera.ViewportSize
         return math.clamp(x, 8, cam.X - w - 8), math.clamp(y, 8, cam.Y - h - 8)
     end
-
+    
     local closeConn
     local function cleanupPopup()
         if closeConn then closeConn:Disconnect() closeConn = nil end
         if popupGui then popupGui:Destroy() popupGui = nil end
     end
-
+    
+    -- Function to update flag and trigger callback
+    local function updateFlag(newColor)
+        if typeof(newColor) == "Color3" then
+            currentColor = newColor
+            self.Flags[flagName] = newColor
+            swatch.BackgroundColor3 = newColor
+            if callback then
+                pcall(callback, newColor)
+            end
+        end
+    end
+    
     local function createPopup()
         cleanupPopup()
         popupGui = Instance.new("ScreenGui")
@@ -2241,7 +2256,7 @@ function DynamicUI:AddColorKey(module, elementName, defaultColor, callback, cond
         popupGui.ResetOnSpawn = false
         popupGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
         popupGui.Parent = PlayerGui
-
+        
         local frame = Instance.new("Frame")
         frame.Size = UDim2.new(0, POPUP_W, 0, POPUP_H)
         local sp, ss = swatch.AbsolutePosition, swatch.AbsoluteSize
@@ -2252,69 +2267,85 @@ function DynamicUI:AddColorKey(module, elementName, defaultColor, callback, cond
         frame.Parent = popupGui
         Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 8)
         Instance.new("UIStroke", frame).Color = Color3.fromRGB(70, 70, 70)
+        
+        -- Animation setup
         frame.BackgroundTransparency = 1
         frame.Size = UDim2.new(0, POPUP_W * 0.8, 0, POPUP_H * 0.8)
         frame.Position = UDim2.new(0, px, 0, py + 10)
-        TweenService:Create(frame, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {BackgroundTransparency = 0, Size = UDim2.new(0, POPUP_W, 0, POPUP_H), Position = UDim2.new(0, px, 0, py)}):Play()
-
+        TweenService:Create(
+            frame,
+            TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+            {
+                BackgroundTransparency = 0,
+                Size = UDim2.new(0, POPUP_W, 0, POPUP_H),
+                Position = UDim2.new(0, px, 0, py)
+            }
+        ):Play()
+        
+        -- Color wheel
         local wheel = Instance.new("ImageButton")
         wheel.Size = UDim2.new(0, WHEEL_SZ, 0, WHEEL_SZ)
         wheel.Position = UDim2.new(0, WHEEL_PADDING, 0, WHEEL_PADDING)
         wheel.BackgroundTransparency = 1
         wheel.Image = self.Images and self.Images["ColorWheel"] or ""
         wheel.Parent = frame
-
+        
         local cursor = Instance.new("Frame")
         cursor.Size = UDim2.new(0, 10, 0, 10)
         cursor.AnchorPoint = Vector2.new(0.5, 0.5)
         cursor.BackgroundTransparency = 1
         cursor.Parent = wheel
         Instance.new("UICorner", cursor).CornerRadius = UDim.new(1, 0)
+        
         local cStroke = Instance.new("UIStroke", cursor)
         cStroke.Color = Color3.new(1, 1, 1)
         cStroke.Thickness = 2
+        
         local cShadow = Instance.new("UIStroke", cursor)
         cShadow.Color = Color3.new(0, 0, 0)
         cShadow.Thickness = 4
         cShadow.Transparency = 0.65
-
+        
+        -- Value slider
         local sliderBg = Instance.new("Frame")
         sliderBg.Size = UDim2.new(0, WHEEL_SZ, 0, 16)
         sliderBg.Position = UDim2.new(0, WHEEL_PADDING, 0, WHEEL_PADDING + WHEEL_SZ + 8)
         sliderBg.BackgroundColor3 = Color3.fromRGB(220, 220, 220)
         sliderBg.BorderSizePixel = 0
         sliderBg.Parent = frame
+        
         local grad = Instance.new("UIGradient", sliderBg)
-        grad.Color = ColorSequence.new {
+        grad.Color = ColorSequence.new{
             ColorSequenceKeypoint.new(0, Color3.new(0, 0, 0)),
             ColorSequenceKeypoint.new(1, Color3.new(1, 1, 1))
         }
-
+        
         local knobContainer = Instance.new("Frame")
         knobContainer.Size = UDim2.new(0, 20, 0, 20)
         knobContainer.AnchorPoint = Vector2.new(0.5, 0.5)
         knobContainer.BackgroundTransparency = 1
         knobContainer.Parent = sliderBg
-
+        
         local arrowUp = Instance.new("ImageLabel")
         arrowUp.BackgroundTransparency = 1
         arrowUp.Size = UDim2.new(0, 20, 0, 15)
         arrowUp.Position = UDim2.new(0, 0, 0.25, 0)
         arrowUp.Image = self.Images and self.Images["ArrowUp"] or ""
         arrowUp.Parent = knobContainer
-
+        
         local arrowDown = Instance.new("ImageLabel")
         arrowDown.BackgroundTransparency = 1
         arrowDown.Size = UDim2.new(0, 20, 0, 15)
         arrowDown.Image = self.Images and self.Images["ArrowDown"] or ""
         arrowDown.Parent = knobContainer
-
+        
+        -- RGB input boxes
         local rgbContainer = Instance.new("Frame")
         rgbContainer.Size = UDim2.new(0, 50, 0, WHEEL_SZ)
         rgbContainer.Position = UDim2.new(0, WHEEL_PADDING + WHEEL_SZ + 8, 0, WHEEL_PADDING)
         rgbContainer.BackgroundTransparency = 1
         rgbContainer.Parent = frame
-
+        
         local boxes, labels = {}, {"R", "G", "B"}
         for i, name in ipairs(labels) do
             local holder = Instance.new("Frame")
@@ -2322,7 +2353,7 @@ function DynamicUI:AddColorKey(module, elementName, defaultColor, callback, cond
             holder.Position = UDim2.new(0, 0, 0, (i - 1) * (WHEEL_SZ / 3))
             holder.BackgroundTransparency = 1
             holder.Parent = rgbContainer
-
+            
             local lab = Instance.new("TextLabel")
             lab.Size = UDim2.new(0.4, 0, 1, 0)
             lab.BackgroundTransparency = 1
@@ -2331,7 +2362,7 @@ function DynamicUI:AddColorKey(module, elementName, defaultColor, callback, cond
             lab.FontFace = Font.new("rbxassetid://12187365559", Enum.FontWeight.Bold)
             lab.TextSize = 16
             lab.Parent = holder
-
+            
             local box = Instance.new("TextBox")
             box.Size = UDim2.new(0.6, 0, 1, 0)
             box.Position = UDim2.new(0.4, 0, 0, 0)
@@ -2345,12 +2376,14 @@ function DynamicUI:AddColorKey(module, elementName, defaultColor, callback, cond
             box.Parent = holder
             Instance.new("UICorner", box).CornerRadius = UDim.new(0, 4)
             boxes[name] = box
+            
             box:GetPropertyChangedSignal("Text"):Connect(function()
                 local filtered = box.Text:gsub("%D", "")
                 if filtered ~= box.Text then box.Text = filtered end
             end)
         end
-
+        
+        -- Hex input box
         local hexBox = Instance.new("TextBox")
         hexBox.Size = UDim2.new(0.3, 0, 0, 24)
         hexBox.Position = UDim2.new(0.67, 0, 0, WHEEL_PADDING + WHEEL_SZ)
@@ -2361,49 +2394,69 @@ function DynamicUI:AddColorKey(module, elementName, defaultColor, callback, cond
         hexBox.TextSize = 14
         hexBox.ClearTextOnFocus = false
         hexBox.PlaceholderText = "#RRGGBB"
-        hexBox.Text = string.format("#%02X%02X%02X", math.floor(currentColor.R * 255), math.floor(currentColor.G * 255), math.floor(currentColor.B * 255))
+        hexBox.Text = string.format("#%02X%02X%02X", 
+            math.floor(currentColor.R * 255), 
+            math.floor(currentColor.G * 255), 
+            math.floor(currentColor.B * 255))
         hexBox.Parent = frame
         Instance.new("UICorner", hexBox).CornerRadius = UDim.new(0, 4)
-
+        
         local draggingWheel, draggingSlider = false, false
+        
         local function refreshUI(fromBoxes, fromHex)
-            currentColor = hsvToRgb(h, s, v)
-            swatch.BackgroundColor3 = currentColor
+            local newColor = hsvToRgb(h, s, v)
+            currentColor = newColor
+            
+            -- Update the flag immediately
+            updateFlag(newColor)
+            
             local r = wheel.AbsoluteSize.X * 0.5
             local angle = h * 2 * math.pi
             local dist = s * r
             cursor.Position = UDim2.new(0, r + math.cos(angle) * dist, 0, r - math.sin(angle) * dist)
             knobContainer.Position = UDim2.new(v, 0, 0.5, 0)
+            
             if not fromBoxes then
-                boxes.R.Text = tostring(math.floor(currentColor.R * 255 + 0.5))
-                boxes.G.Text = tostring(math.floor(currentColor.G * 255 + 0.5))
-                boxes.B.Text = tostring(math.floor(currentColor.B * 255 + 0.5))
+                boxes.R.Text = tostring(math.floor(newColor.R * 255 + 0.5))
+                boxes.G.Text = tostring(math.floor(newColor.G * 255 + 0.5))
+                boxes.B.Text = tostring(math.floor(newColor.B * 255 + 0.5))
             end
+            
             if not fromHex then
-                hexBox.Text = string.format("#%02X%02X%02X", math.floor(currentColor.R * 255), math.floor(currentColor.G * 255), math.floor(currentColor.B * 255))
+                hexBox.Text = string.format("#%02X%02X%02X", 
+                    math.floor(newColor.R * 255), 
+                    math.floor(newColor.G * 255), 
+                    math.floor(newColor.B * 255))
             end
-            self.Flags[flagName] = currentColor
-            if callback then callback(currentColor) end
         end
-
+        
         task.defer(refreshUI)
-
+        
+        -- Wheel interaction
         wheel.InputBegan:Connect(function(i)
             if i.UserInputType == Enum.UserInputType.MouseButton1 then
                 draggingWheel = true
                 TweenService:Create(cursor, TweenInfo.new(0.1), {Size = UDim2.new(0, 15, 0, 15)}):Play()
             end
         end)
+        
+        -- Slider interaction
         sliderBg.InputBegan:Connect(function(i)
-            if i.UserInputType == Enum.UserInputType.MouseButton1 then draggingSlider = true end
+            if i.UserInputType == Enum.UserInputType.MouseButton1 then 
+                draggingSlider = true 
+            end
         end)
+        
         UserInputService.InputEnded:Connect(function(i)
             if i.UserInputType == Enum.UserInputType.MouseButton1 then
-                if draggingWheel then TweenService:Create(cursor, TweenInfo.new(0.1), {Size = UDim2.new(0, 10, 0, 10)}):Play() end
+                if draggingWheel then 
+                    TweenService:Create(cursor, TweenInfo.new(0.1), {Size = UDim2.new(0, 10, 0, 10)}):Play() 
+                end
                 draggingWheel = false
                 draggingSlider = false
             end
         end)
+        
         UserInputService.InputChanged:Connect(function(i)
             if i.UserInputType ~= Enum.UserInputType.MouseMovement then return end
             if draggingWheel then
@@ -2417,14 +2470,19 @@ function DynamicUI:AddColorKey(module, elementName, defaultColor, callback, cond
                 refreshUI()
             end
         end)
-
+        
+        -- RGB box interactions
         for comp, box in pairs(boxes) do
             box.FocusLost:Connect(function()
                 local n = tonumber(box.Text)
                 if n then
                     n = math.clamp(n, 0, 255)
                     box.Text = tostring(n)
-                    local col = Color3.fromRGB(tonumber(boxes.R.Text) or 0, tonumber(boxes.G.Text) or 0, tonumber(boxes.B.Text) or 0)
+                    local col = Color3.fromRGB(
+                        tonumber(boxes.R.Text) or 0,
+                        tonumber(boxes.G.Text) or 0,
+                        tonumber(boxes.B.Text) or 0
+                    )
                     h, s, v = rgbToHsv(col)
                     refreshUI(true)
                 else
@@ -2432,7 +2490,8 @@ function DynamicUI:AddColorKey(module, elementName, defaultColor, callback, cond
                 end
             end)
         end
-
+        
+        -- Hex box interaction
         hexBox.FocusLost:Connect(function()
             local text = hexBox.Text:gsub("#", "")
             if #text == 6 then
@@ -2444,44 +2503,59 @@ function DynamicUI:AddColorKey(module, elementName, defaultColor, callback, cond
                     h, s, v = rgbToHsv(col)
                     refreshUI(false, true)
                 else
-                    hexBox.Text = string.format("#%02X%02X%02X", math.floor(currentColor.R * 255), math.floor(currentColor.G * 255), math.floor(currentColor.B * 255))
+                    hexBox.Text = string.format("#%02X%02X%02X", 
+                        math.floor(currentColor.R * 255), 
+                        math.floor(currentColor.G * 255), 
+                        math.floor(currentColor.B * 255))
                 end
             else
-                hexBox.Text = string.format("#%02X%02X%02X", math.floor(currentColor.R * 255), math.floor(currentColor.G * 255), math.floor(currentColor.B * 255))
+                hexBox.Text = string.format("#%02X%02X%02X", 
+                    math.floor(currentColor.R * 255), 
+                    math.floor(currentColor.G * 255), 
+                    math.floor(currentColor.B * 255))
             end
         end)
-
+        
+        -- Click outside to close
         closeConn = UserInputService.InputBegan:Connect(function(input)
             if input.UserInputType == Enum.UserInputType.MouseButton1 then
                 local pos = input.Position
                 local fPos, fSize = frame.AbsolutePosition, frame.AbsoluteSize
-                local inside = pos.X >= fPos.X and pos.X <= fPos.X + fSize.X and pos.Y >= fPos.Y and pos.Y <= fPos.Y + fSize.Y
+                local inside = pos.X >= fPos.X and pos.X <= fPos.X + fSize.X and 
+                              pos.Y >= fPos.Y and pos.Y <= fPos.Y + fSize.Y
                 if not inside then cleanupPopup() end
             end
         end)
     end
-
-    swatch.MouseButton1Click:Connect(function()
-        if popupGui then cleanupPopup() else createPopup() end
+    
+    swatch.MouseButton1Click:Connect(function() 
+        if popupGui then 
+            cleanupPopup() 
+        else 
+            createPopup() 
+        end 
     end)
-
+    
     local colorData = {
         Frame = row,
         Button = swatch,
-        GetColor = function() return currentColor end,
+        GetColor = function() 
+            return currentColor 
+        end,
         SetColor = function(_, col)
             if typeof(col) == "Color3" then
                 h, s, v = rgbToHsv(col)
-                currentColor = col
-                swatch.BackgroundColor3 = col
-                self.Flags[flagName] = col  -- Still direct Color3
-                if popupGui then popupGui:Destroy() popupGui = nil createPopup() end
-                if callback then callback(col) end
+                updateFlag(col)
+                if popupGui then 
+                    popupGui:Destroy() 
+                    popupGui = nil 
+                    createPopup() 
+                end
             end
         end,
         Condition = condition
     }
-
+    
     function colorData:RefreshVisibility()
         if not condition then
             row.Visible = true
@@ -2490,10 +2564,11 @@ function DynamicUI:AddColorKey(module, elementName, defaultColor, callback, cond
             row.Visible = (ok and show) or false
         end
     end
+    
     colorData:RefreshVisibility()
-
     table.insert(module.Elements, colorData)
     self._flagControls[flagName] = colorData
+    
     return colorData
 end
 
@@ -3015,3 +3090,5 @@ end
 
 -- Keybind to toggle modules
 return DynamicUI
+
+print("hi")
