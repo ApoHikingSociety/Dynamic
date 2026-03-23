@@ -90,7 +90,15 @@ if QueueOnTeleport and Key then
             QueueOnTeleport([[
 getgenv().SCRIPT_KEY = "]] .. SafeKey .. [["
 
-loadstring(game:HttpGet("]] .. ScriptUrl .. [["))()
+local ScriptMap = {
+    [807930589] = "https://api.jnkie.com/api/v1/luascripts/public/95e151e386456cebbb64a64a06a8faa80c7f3544fcd788a07b481e3f6ff975a8/download",
+    [5130394318] = "https://api.jnkie.com/api/v1/luascripts/public/d111871052b43a2591b2e327ec470d79f3e2be75b5d0c682a2c0843a61c4533a/download"
+}
+
+local ScriptUrl = ScriptMap[game.GameId]
+if ScriptUrl then
+    loadstring(game:HttpGet(ScriptUrl))()
+end
 ]])
         end
     end)
