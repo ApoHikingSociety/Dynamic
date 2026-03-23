@@ -8,9 +8,9 @@ local ScriptMap = {
 }
 
 local AllowedPlaces = {
-    [14890802310] = true,
     [74747090658891] = true,
-    [2317712696] = true
+    [2317712696] = true,
+    [14890802310] = true
 }
 
 if not AllowedPlaces[game.PlaceId] then
@@ -100,7 +100,8 @@ LocalPlayer.OnTeleport:Connect(function(State)
     if State == Enum.TeleportState.InProgress then
         QueueOnTeleport(
             'getgenv().SCRIPT_KEY = "' .. tostring(Key or "") .. '"\n' ..
-            'if not ({[74747090658891]=true,[2317712696]=true})[game.PlaceId] then return end\n' ..
+            'local Allowed = {[74747090658891]=true,[2317712696]=true,[14890802310]=true}\n' ..
+            'if not Allowed[game.PlaceId] then return end\n' ..
             'loadstring(game:HttpGet("' .. ScriptUrl .. '"))()'
         )
     end
