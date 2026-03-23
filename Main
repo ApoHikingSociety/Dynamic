@@ -56,7 +56,9 @@ local function StartWatcher(Key)
     if getgenv()._DynamicKeyWatcher then
         return
     end
+
     getgenv()._DynamicKeyWatcher = true
+
     task.spawn(function()
         while task.wait(240) do
             pcall(function()
@@ -77,29 +79,15 @@ if Key and IsKeyValid(Key) then
         LocalPlayer:Kick("Executor is not supported.")
         return
     end
+
     StartWatcher(Key)
     LoadMain()
 end
 
 local QueueOnTeleport = syn and syn.queue_on_teleport or queue_on_teleport
 
-if QueueOnTeleport and Key then
-    LocalPlayer.OnTeleport:Connect(function(State)
-        if State == Enum.TeleportState.InProgress then
-            local SafeKey = tostring(Key):gsub('"', '\\"')
-            QueueOnTeleport([[
-getgenv().SCRIPT_KEY = "]] .. SafeKey .. [["
-
-local ScriptMap = {
-    [807930589] = "https://api.jnkie.com/api/v1/luascripts/public/95e151e386456cebbb64a64a06a8faa80c7f3544fcd788a07b481e3f6ff975a8/download",
-    [5130394318] = "https://api.jnkie.com/api/v1/luascripts/public/d111871052b43a2591b2e327ec470d79f3e2be75b5d0c682a2c0843a61c4533a/download"
-}
-
-local ScriptUrl = ScriptMap[game.GameId]
-if ScriptUrl then
-    loadstring(game:HttpGet(ScriptUrl))()
-end
-]])
-        end
-    end)
-end
+LocalPlayer.OnTeleport:Connect(function(State)
+    if State == Enum.TeleportState.InProgress then
+        QueueOnTeleport('getgenv().SCRIPT_KEY = "' .. tostring(Key or "") .. '" loadstring(game:HttpGet("https://raw.githubusercontent.com/ApoHikingSociety/Dynamic//main/Main"))()')
+    end
+end)
