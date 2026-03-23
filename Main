@@ -88,6 +88,9 @@ local QueueOnTeleport = syn and syn.queue_on_teleport or queue_on_teleport
 
 LocalPlayer.OnTeleport:Connect(function(State)
     if State == Enum.TeleportState.InProgress then
-        QueueOnTeleport('getgenv().SCRIPT_KEY = "' .. tostring(Key or "") .. '" loadstring(game:HttpGet("https://raw.githubusercontent.com/ApoHikingSociety/Dynamic//main/Main"))()')
+        QueueOnTeleport(
+            'getgenv().SCRIPT_KEY = "' .. tostring(Key or "") .. '"\n' ..
+            'loadstring(game:HttpGet("' .. ScriptUrl .. '"))()'
+        )
     end
 end)
