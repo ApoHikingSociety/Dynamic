@@ -7,6 +7,16 @@ local ScriptMap = {
     [5130394318] = "https://api.jnkie.com/api/v1/luascripts/public/d111871052b43a2591b2e327ec470d79f3e2be75b5d0c682a2c0843a61c4533a/download"
 }
 
+local AllowedPlaces = {
+    [14890802310] = true,
+    [74747090658891] = true,
+    [2317712696] = true
+}
+
+if not AllowedPlaces[game.PlaceId] then
+    return
+end
+
 local GameId = game.GameId
 local ScriptUrl = ScriptMap[GameId]
 
@@ -90,6 +100,7 @@ LocalPlayer.OnTeleport:Connect(function(State)
     if State == Enum.TeleportState.InProgress then
         QueueOnTeleport(
             'getgenv().SCRIPT_KEY = "' .. tostring(Key or "") .. '"\n' ..
+            'if not ({[74747090658891]=true,[2317712696]=true})[game.PlaceId] then return end\n' ..
             'loadstring(game:HttpGet("' .. ScriptUrl .. '"))()'
         )
     end
